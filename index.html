@@ -698,7 +698,9 @@
 
     function formatWaktu(waktuStr) {
       if (!waktuStr || waktuStr === '-') return null;
+      // Jika sudah berbentuk HH:MM:SS, kembalikan langsung (tanpa modifikasi)
       if (typeof waktuStr === 'string' && waktuStr.match(/^\d{2}:\d{2}:\d{2}$/)) return waktuStr;
+      // Jika berupa objek Date, konversi ke HH:MM:SS
       try {
         const dateObj = new Date(waktuStr);
         if (!isNaN(dateObj.getTime())) {
@@ -956,7 +958,8 @@
       let html = '';
       sortedData.forEach(staff => {
         const isHadir = staff.status === 'Sudah Absen';
-        const time = formatWaktu(staff.waktu);
+        // Tampilkan waktu apa adanya, tanpa modifikasi (gunakan staff.waktu langsung jika sudah absen)
+        const time = isHadir ? (staff.waktu || '-') : '-';
         const initial = staff.nama.substring(0, 2).toUpperCase();
         const rowClass = isHadir ? 'is-hadir' : 'is-belum';
         
@@ -1043,7 +1046,7 @@
           showToast('Berhasil Absen', 'success');
           // Update data staff
           currentStaff.status = 'Sudah Absen';
-          currentStaff.waktu = result.waktu;
+          currentStaff.waktu = result.waktu; // Simpan waktu asli dari backend
           // Update juga di staffData
           const index = staffData.findIndex(s => s.id === currentStaff.id);
           if (index !== -1) {
