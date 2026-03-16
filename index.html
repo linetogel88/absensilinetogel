@@ -696,31 +696,16 @@
       filterTable();
     }
 
-    // Fungsi format waktu yang diperbaiki untuk menangani berbagai format, termasuk ISO 1899
     function formatWaktu(waktuStr) {
-      if (!waktuStr || waktuStr === '-') return '-';
-      
-      // Jika sudah berbentuk HH:MM:SS, kembalikan langsung
-      if (typeof waktuStr === 'string' && waktuStr.match(/^\d{2}:\d{2}:\d{2}$/)) {
-        return waktuStr;
-      }
-      
-      // Jika mengandung 'T' (format ISO), ekstrak HH:MM:SS
-      if (typeof waktuStr === 'string' && waktuStr.includes('T')) {
-        const match = waktuStr.match(/T(\d{2}:\d{2}:\d{2})/);
-        if (match) return match[1];
-      }
-      
-      // Fallback: coba parsing sebagai Date
+      if (!waktuStr || waktuStr === '-') return null;
+      if (typeof waktuStr === 'string' && waktuStr.match(/^\d{2}:\d{2}:\d{2}$/)) return waktuStr;
       try {
         const dateObj = new Date(waktuStr);
         if (!isNaN(dateObj.getTime())) {
           return `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
         }
-      } catch (e) {}
-      
-      // Jika semua gagal, kembalikan aslinya (agar tidak hilang)
-      return waktuStr;
+      } catch (e) { return null; }
+      return null;
     }
 
     function setLiveStatus(status) {
@@ -971,8 +956,7 @@
       let html = '';
       sortedData.forEach(staff => {
         const isHadir = staff.status === 'Sudah Absen';
-        // Gunakan formatWaktu untuk memastikan tampil HH:MM:SS
-        const time = isHadir ? formatWaktu(staff.waktu) : '-';
+        const time = formatWaktu(staff.waktu);
         const initial = staff.nama.substring(0, 2).toUpperCase();
         const rowClass = isHadir ? 'is-hadir' : 'is-belum';
         
@@ -1007,7 +991,7 @@
           statusText = 'SUDAH ABSEN';
         }
         
-        const timeText = time;
+        const timeText = isHadir ? time : '-';
 
         html += `
           <div class="staff-row ${rowClass} ${blinkClass} ${terlambatRowClass}" title="${noteText}">
@@ -1059,7 +1043,7 @@
           showToast('Berhasil Absen', 'success');
           // Update data staff
           currentStaff.status = 'Sudah Absen';
-          currentStaff.waktu = result.waktu; // Simpan waktu asli dari backend
+          currentStaff.waktu = result.waktu;
           // Update juga di staffData
           const index = staffData.findIndex(s => s.id === currentStaff.id);
           if (index !== -1) {
