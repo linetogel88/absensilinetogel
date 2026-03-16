@@ -212,21 +212,8 @@
       .date-mobile span { background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px; color: var(--text-muted); }
       .date-mobile i { margin-right: 5px; color: var(--primary); }
 
-      /* Stats container lebih kecil di mobile */
-      .stats-container { 
-        margin-bottom: 20px; 
-        gap: 5px;
-      }
-      .stat-box {
-        padding: 8px 5px;
-        border-radius: 12px;
-      }
-      .stat-num { 
-        font-size: 1.2rem; 
-      }
-      .stat-label { 
-        font-size: 0.55rem; 
-      }
+      .stats-container { margin-bottom: 20px; }
+      .staff-list { max-height: 60vh; }
     }
 
     /* KOMPONEN UMUM */
@@ -353,7 +340,7 @@
       border: 1px solid var(--warning);
     }
 
-    /* Warna merah untuk baris terlambat */
+    /* Warna merah untuk baris terlambat (opsional, jika ingin barisnya juga merah) */
     .staff-row.terlambat-row {
       background: rgba(255, 118, 117, 0.1);
       border-color: var(--danger);
@@ -531,7 +518,7 @@
         <span><i class="fas fa-calendar"></i> <span id="currentDateMobile">-</span></span>
       </div>
 
-      <!-- Stats (sudah diperkecil untuk mobile via CSS) -->
+      <!-- Stats -->
       <div class="stats-container">
         <div class="stat-box">
           <div class="stat-num" id="totalStaff">0</div>
@@ -539,7 +526,7 @@
         </div>
         <div class="stat-box hadir">
           <div class="stat-num" id="presentCount">0</div>
-          <div class="stat-label">Absen</div> <!-- Ubah "Bangun" menjadi "Absen" -->
+          <div class="stat-label">Bangun</div>
         </div>
         <div class="stat-box belum">
           <div class="stat-num" id="absentCount">0</div>
@@ -696,30 +683,21 @@
       filterTable();
     }
 
-    // Fungsi format waktu yang diperbaiki untuk menangani berbagai format
     function formatWaktu(waktuStr) {
-      if (!waktuStr || waktuStr === '-') return '-';
-      // Jika sudah berbentuk HH:MM:SS, kembalikan
+      if (!waktuStr || waktuStr === '-') return null;
       if (typeof waktuStr === 'string' && waktuStr.match(/^\d{2}:\d{2}:\d{2}$/)) return waktuStr;
-      // Jika mengandung 'T' (format ISO), ekstrak HH:MM:SS
-      if (typeof waktuStr === 'string' && waktuStr.includes('T')) {
-        const match = waktuStr.match(/T(\d{2}:\d{2}:\d{2})/);
-        if (match) return match[1];
-      }
-      // Fallback: coba parsing sebagai Date
       try {
         const dateObj = new Date(waktuStr);
         if (!isNaN(dateObj.getTime())) {
           return `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
         }
-      } catch (e) {}
-      return '-';
+      } catch (e) { return null; }
+      return null;
     }
 
     function setLiveStatus(status) {
-      // Ubah teks LIVE menjadi ONLINE
       const dotClass = status === 'connected' ? 'connected' : '';
-      const text = status === 'connected' ? 'ONLINE' : 'OFFLINE';
+      const text = status === 'connected' ? 'LIVE' : 'OFFLINE';
       if (elements.liveDotMob) {
         elements.liveDotMob.className = `live-dot ${dotClass}`;
         elements.liveTextMob.innerText = text;
@@ -816,15 +794,8 @@
           staffData = result.data.filter(staff => staff.nama && staff.nama.trim() !== "").map(staff => {
             // Jika tidak ada jam_kerja dari backend, beri default "07:45:00"
             if (!staff.jam_kerja) staff.jam_kerja = "07:45:00";
-            
-            // CEK JAM KERJA: jika mengandung kata "cuti" (case insensitive), set cuti = true
-            if (staff.jam_kerja && staff.jam_kerja.toLowerCase().includes('cuti')) {
-              staff.cuti = true;
-            } else {
-              // Jika tidak, gunakan field cuti dari backend (jika ada)
-              staff.cuti = staff.cuti === true || staff.cuti === "true" || staff.cuti === "Cuti" ? true : false;
-            }
-            
+            // Tambah field cuti default false jika tidak ada (asumsi dari backend ada field cuti)
+            staff.cuti = staff.cuti === true || staff.cuti === "true" || staff.cuti === "Cuti" ? true : false;
             return staff;
           });
           
@@ -861,7 +832,7 @@
     }
 
     function updateStats() {
-      // Hanya hitung staff yang tidak cuti (aktif)
+      // Hanya hitung staff yang tidak cuti
       const activeStaff = staffData.filter(s => !s.cuti);
       const total = activeStaff.length;
       const present = activeStaff.filter(s => s.status === 'Sudah Absen').length;
@@ -896,7 +867,8 @@
           elements.submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> ABSEN';
         }
       } else {
-        // Jika currentStaff tidak ditemukan, tampilkan skeleton loading
+        // Jika currentStaff tidak ditemukan, tampilkan skeleton loading terus (atau bisa juga tampilkan pesan halus?)
+        // Kita tampilkan skeleton agar tetap keren, dan nonaktifkan tombol.
         showSkeletonUserInfo();
         elements.submitBtn.disabled = true;
         elements.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> LOADING...';
@@ -915,7 +887,7 @@
 
     function renderTable(filter = "") {
       const tbody = elements.attendanceBody;
-      // Hanya tampilkan staff yang TIDAK CUTI (aktif) di dashboard
+      // Hanya tampilkan staff yang tidak cuti
       let data = staffData.filter(s => !s.cuti);
 
       if (filter) {
@@ -927,44 +899,10 @@
         return;
       }
 
-      // ===== FITUR PINTAR DENGAN TOLERANSI 15 MENIT =====
-      const nowSec = timeToSeconds(currentTimeStr);
-      const TOLERANSI = 15 * 60; // 15 menit dalam detik
-
-      const upcoming = [];  // Jam kerja > sekarang atau ≤ sekarang namun masih dalam toleransi 15 menit
-      const past = [];      // Jam kerja ≤ sekarang dan sudah lewat lebih dari toleransi
-
-      data.forEach(staff => {
-        const staffJamSec = timeToSeconds(staff.jam_kerja);
-        if (staffJamSec > nowSec) {
-          // Belum lewat
-          upcoming.push(staff);
-        } else {
-          // Sudah lewat atau tepat waktu
-          const selisih = nowSec - staffJamSec;
-          if (selisih <= TOLERANSI) {
-            // Masih dalam toleransi 15 menit -> anggap masih upcoming (tetap di atas)
-            upcoming.push(staff);
-          } else {
-            // Lewat lebih dari 15 menit -> pindah ke grup past (bawah)
-            past.push(staff);
-          }
-        }
-      });
-
-      // Urutkan upcoming secara ascending (yang paling cepat duluan)
-      upcoming.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      // Urutkan past secara ascending (jam kerja yang lebih awal lebih dulu) – tidak wajib, tapi rapi
-      past.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-
-      // Gabungkan: upcoming di atas, past di bawah
-      const sortedData = upcoming.concat(past);
-      // =================================================
-
       let html = '';
-      sortedData.forEach(staff => {
+      data.forEach(staff => {
         const isHadir = staff.status === 'Sudah Absen';
-        const time = isHadir ? formatWaktu(staff.waktu) : '-'; // Gunakan formatWaktu untuk memastikan format HH:MM:SS
+        const time = formatWaktu(staff.waktu);
         const initial = staff.nama.substring(0, 2).toUpperCase();
         const rowClass = isHadir ? 'is-hadir' : 'is-belum';
         
@@ -995,11 +933,10 @@
             noteText = '';
           }
         } else if (isHadir) {
-          // Ubah "SUDAH BANGUN" menjadi "SUDAH ABSEN"
-          statusText = 'SUDAH ABSEN';
+          statusText = 'SUDAH BANGUN';
         }
         
-        const timeText = time; // sudah diformat
+        const timeText = isHadir ? time : '-';
 
         html += `
           <div class="staff-row ${rowClass} ${blinkClass} ${terlambatRowClass}" title="${noteText}">
@@ -1051,7 +988,7 @@
           showToast('Berhasil Absen', 'success');
           // Update data staff
           currentStaff.status = 'Sudah Absen';
-          currentStaff.waktu = result.waktu; // Simpan waktu asli dari backend
+          currentStaff.waktu = result.waktu;
           // Update juga di staffData
           const index = staffData.findIndex(s => s.id === currentStaff.id);
           if (index !== -1) {
