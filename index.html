@@ -212,20 +212,18 @@
       .date-mobile span { background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px; color: var(--text-muted); }
       .date-mobile i { margin-right: 5px; color: var(--primary); }
 
-      /* Stats container lebih kecil di mobile */
-      .stats-container { 
-        margin-bottom: 20px; 
-        gap: 5px;
+      .stats-container { margin-bottom: 20px; }
+      .staff-list { max-height: 60vh; }
+      
+      /* Perkecil card statistik di mobile */
+      .stats-container .stat-box {
+        padding: 10px 5px;
       }
-      .stat-box {
-        padding: 8px 5px;
-        border-radius: 12px;
+      .stats-container .stat-num {
+        font-size: 1.2rem;
       }
-      .stat-num { 
-        font-size: 1.2rem; 
-      }
-      .stat-label { 
-        font-size: 0.55rem; 
+      .stats-container .stat-label {
+        font-size: 0.55rem;
       }
     }
 
@@ -353,7 +351,7 @@
       border: 1px solid var(--warning);
     }
 
-    /* Warna merah untuk baris terlambat */
+    /* Warna merah untuk baris terlambat (opsional, jika ingin barisnya juga merah) */
     .staff-row.terlambat-row {
       background: rgba(255, 118, 117, 0.1);
       border-color: var(--danger);
@@ -531,7 +529,7 @@
         <span><i class="fas fa-calendar"></i> <span id="currentDateMobile">-</span></span>
       </div>
 
-      <!-- Stats (sudah diperkecil untuk mobile via CSS) -->
+      <!-- Stats -->
       <div class="stats-container">
         <div class="stat-box">
           <div class="stat-num" id="totalStaff">0</div>
@@ -539,7 +537,7 @@
         </div>
         <div class="stat-box hadir">
           <div class="stat-num" id="presentCount">0</div>
-          <div class="stat-label">Absen</div> <!-- Ubah "Bangun" menjadi "Absen" -->
+          <div class="stat-label">Absen</div> <!-- Diubah dari "Bangun" menjadi "Absen" -->
         </div>
         <div class="stat-box belum">
           <div class="stat-num" id="absentCount">0</div>
@@ -709,8 +707,8 @@
     }
 
     function setLiveStatus(status) {
-      // Ubah teks LIVE menjadi ONLINE
       const dotClass = status === 'connected' ? 'connected' : '';
+      // Ubah teks "LIVE" menjadi "ONLINE"
       const text = status === 'connected' ? 'ONLINE' : 'OFFLINE';
       if (elements.liveDotMob) {
         elements.liveDotMob.className = `live-dot ${dotClass}`;
@@ -919,39 +917,28 @@
         return;
       }
 
-      // ===== FITUR PINTAR DENGAN TOLERANSI 15 MENIT =====
+      // ===== FITUR PINTAR: Urutkan berdasarkan jam kerja =====
       const nowSec = timeToSeconds(currentTimeStr);
-      const TOLERANSI = 15 * 60; // 15 menit dalam detik
-
-      const upcoming = [];  // Jam kerja > sekarang atau ≤ sekarang namun masih dalam toleransi 15 menit
-      const past = [];      // Jam kerja ≤ sekarang dan sudah lewat lebih dari toleransi
+      const upcoming = [];  // Jam kerja > sekarang
+      const past = [];      // Jam kerja <= sekarang
 
       data.forEach(staff => {
         const staffJamSec = timeToSeconds(staff.jam_kerja);
         if (staffJamSec > nowSec) {
-          // Belum lewat
           upcoming.push(staff);
         } else {
-          // Sudah lewat atau tepat waktu
-          const selisih = nowSec - staffJamSec;
-          if (selisih <= TOLERANSI) {
-            // Masih dalam toleransi 15 menit -> anggap masih upcoming (tetap di atas)
-            upcoming.push(staff);
-          } else {
-            // Lewat lebih dari 15 menit -> pindah ke grup past (bawah)
-            past.push(staff);
-          }
+          past.push(staff);
         }
       });
 
       // Urutkan upcoming secara ascending (yang paling cepat duluan)
       upcoming.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      // Urutkan past secara ascending (jam kerja yang lebih awal lebih dulu) – tidak wajib, tapi rapi
+      // Urutkan past secara ascending (jam kerja yang lebih awal lebih dulu)
       past.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
 
       // Gabungkan: upcoming di atas, past di bawah
       const sortedData = upcoming.concat(past);
-      // =================================================
+      // =====================================================
 
       let html = '';
       sortedData.forEach(staff => {
@@ -987,8 +974,7 @@
             noteText = '';
           }
         } else if (isHadir) {
-          // Ubah "SUDAH BANGUN" menjadi "SUDAH ABSEN"
-          statusText = 'SUDAH ABSEN';
+          statusText = 'SUDAH ABSEN'; // Diubah dari "SUDAH BANGUN"
         }
         
         const timeText = isHadir ? time : '-';
