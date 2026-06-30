@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ABSENSI LINE TOGEL</title>
-
+  
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%92%3C/text%3E%3C/svg%3E">
 
@@ -29,7 +29,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
+    
     body {
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
@@ -170,10 +170,10 @@
         flex-direction: column;
         gap: 20px;
       }
-
+      
       .mobile-header { display: none; }
       .web-header { display: block; text-align: center; margin-bottom: 10px; }
-
+      
       .staff-list { max-height: calc(100vh - 200px); }
     }
 
@@ -182,7 +182,7 @@
       .app-layout { display: block; padding: 15px; }
       .sidebar { margin-bottom: 20px; box-shadow: none; background: transparent; padding: 0; border: none; }
       .web-header { display: none; }
-
+      
       .mobile-header {
         display: flex;
         align-items: center;
@@ -198,14 +198,14 @@
       }
       .m-title h1 { font-size: 1.1rem; font-weight: 800; }
       .m-title p { font-size: 0.7rem; color: var(--text-muted); }
-
+      
       .live-badge-m {
         background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 20px;
         font-size: 0.7rem; display: flex; align-items: center; gap: 5px; border: 1px solid var(--glass-border);
       }
       .live-dot { width: 6px; height: 6px; background: #636e72; border-radius: 50%; }
       .live-dot.connected { background: var(--success); box-shadow: 0 0 5px var(--success); }
-
+      
       .date-mobile {
         display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.8rem;
       }
@@ -246,9 +246,9 @@
       border: 1px solid var(--glass-border); border-radius: 20px;
       padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-
+    
     .form-label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
-
+    
     /* User info card */
     .user-info-card {
       display: flex;
@@ -280,7 +280,7 @@
       font-size: 0.8rem;
       color: var(--text-muted);
     }
-
+    
     .btn-submit {
       width: 100%; padding: 12px; border-radius: 10px;
       background: linear-gradient(135deg, var(--primary), #5849c4);
@@ -314,7 +314,7 @@
       margin-bottom: 15px;
     }
     .list-title { font-size: 1rem; font-weight: 700; }
-
+    
     .search-box { position: relative; width: 150px; }
     .search-box input { padding: 6px 10px 6px 30px; font-size: 0.8rem; width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; color: white; }
     .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.7rem; color: var(--text-muted); }
@@ -328,7 +328,7 @@
       background: rgba(255,255,255,0.02); padding: 12px 15px; border-radius: 12px;
       border: 1px solid transparent; transition: all 0.2s;
     }
-
+    
     .staff-row.is-hadir {
       background: var(--success-glow);
       border-color: rgba(0, 184, 148, 0.2);
@@ -337,7 +337,7 @@
     .staff-row.is-hadir .avatar { background: var(--success); }
 
     .staff-row.is-belum .status-badge { background: rgba(255,255,255,0.1); color: var(--text-muted); }
-
+    
     /* Tambahan untuk status peringatan */
     .status-badge.status-terlambat { background: var(--danger); color: white; }
     .status-badge.status-bisa { background: var(--warning); color: #2d3436; }
@@ -433,7 +433,7 @@
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 0.8rem; color: white;
     }
-
+    
     .user-detail-small h4 { font-size: 0.9rem; font-weight: 600; }
     .user-detail-small span { font-size: 0.7rem; color: var(--text-muted); }
 
@@ -559,10 +559,10 @@
 
   <!-- Aplikasi Utama -->
   <div class="app-layout" id="mainApp">
-
+    
     <!-- SIDEBAR -->
     <div class="sidebar">
-
+      
       <!-- Web Header (Desktop) -->
       <div class="web-header">
         <div style="width:60px;height:60px;background:linear-gradient(135deg, var(--primary), var(--secondary));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:26px;box-shadow: 0 10px 20px var(--primary-glow);">
@@ -570,7 +570,7 @@
         </div>
         <h1 style="font-size:1.2rem;font-weight:800;">LINE TOGEL</h1>
         <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:5px;">Absensi Harian</p>
-
+        
         <div class="live-badge-m" style="justify-content:center; margin-top:10px; margin-bottom:20px;">
           <div class="live-dot" id="liveDotDesk"></div>
           <span id="liveTextDesk">OFFLINE</span>
@@ -625,7 +625,7 @@
           <i class="fas fa-sign-out-alt"></i> LOGOUT
         </button>
       </div>
-
+      
       <div style="margin-top:auto; text-align:center; color:var(--text-muted); font-size:0.75rem; display:none;" id="desktopDateWrap">
          <span id="currentDateDesktop"></span>
       </div>
@@ -634,7 +634,7 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-
+      
       <div class="card" style="margin-bottom:0; height:100%; display:flex; flex-direction:column;">
         <div class="list-header">
           <div class="list-title">Rekap Hari Ini</div>
@@ -653,7 +653,6 @@
 
   <script>
     // ========== KONFIGURASI ==========
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzXd5pu9E8Ejn4Mo1r6EfG49AdFBcKsmwxcJHEjpylWrWgntckxrQDk7nRo1505-SRK/exec';
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxRNqN3xohIU8l04bFubc_G5Ca4GJCLC0chLHbKz971ut97IxywgcFp7P7ZaC3iBF8Dvw/exec';
 
     let staffData = [];
@@ -750,16 +749,14 @@
     }
 
     function updateClock() {
-      const now = new Date();
       const now = getWibNow();
       const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-      const dStr = `${days[now.getDay()]}, ${now.toLocaleDateString('id-ID')}`;
       const dStr = `${days[now.getDay()]}, ${now.toLocaleDateString('id-ID')} WIB`;
       const tStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-
+      
       // Simpan currentTimeStr untuk perbandingan jam kerja
       currentTimeStr = tStr;
-
+      
       if (elements.currentTimeMobile) elements.currentTimeMobile.innerText = tStr;
       if (elements.currentDateMobile) elements.currentDateMobile.innerText = dStr;
       if (elements.currentDateDesktop) elements.currentDateDesktop.innerText = dStr;
@@ -769,15 +766,6 @@
     }
 
     function formatWaktu(waktuStr) {
-      if (!waktuStr || waktuStr === '-') return null;
-      if (typeof waktuStr === 'string' && waktuStr.match(/^\d{2}:\d{2}:\d{2}$/)) return waktuStr;
-      try {
-        const dateObj = new Date(waktuStr);
-        if (!isNaN(dateObj.getTime())) {
-          return `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
-        }
-      } catch (e) { return null; }
-      return null;
       // Jangan convert ke new Date(), karena bisa berubah akibat timezone/browser.
       // Ambil jam persis dari backend / Google Sheet.
       const raw = String(waktuStr || '').trim();
@@ -803,7 +791,6 @@
 
     // ========== API REQUEST DENGAN HANDLING RESPON ==========
     async function apiRequest(action, method = 'GET', body = null) {
-      let url = BACKEND_URL + '?action=' + action;
       let url = BACKEND_URL + '?action=' + action + '&_=' + Date.now();
       let options = { 
         method: method, 
@@ -811,7 +798,7 @@
         cache: 'no-cache',
         headers: {}
       };
-
+      
       if (method === 'POST') {
         options.body = JSON.stringify(body);
         options.headers['Content-Type'] = 'text/plain';
@@ -822,7 +809,7 @@
         const response = await fetch(url, options);
         const text = await response.text();
         console.log('Respons mentah:', text);
-
+        
         // Coba cek apakah respons dimulai dengan { atau [ (JSON)
         if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
           return JSON.parse(text);
@@ -843,7 +830,7 @@
       const rawUsername = elements.loginUsername.value.trim();
       const username = rawUsername.toLowerCase();   // <--- CASE-INSENSITIVE
       const password = elements.loginPassword.value.trim();
-
+      
       if (!rawUsername || !password) {
         elements.loginError.innerText = 'Username dan password harus diisi';
         return;
@@ -884,18 +871,8 @@
       try {
         const result = await apiRequest('load');
         if (result.success) {
-          // Filter staff dengan nama tidak kosong, tambah default jam_kerja dan cuti
           // Filter staff dengan nama tidak kosong, baca OFFDAY/CUTI dari backend
           staffData = result.data.filter(staff => staff.nama && staff.nama.trim() !== "").map(staff => {
-            // Jika tidak ada jam_kerja dari backend, beri default "07:45:00"
-            if (!staff.jam_kerja) staff.jam_kerja = "07:45:00";
-            
-            // CEK JAM KERJA: jika mengandung kata "cuti" (case insensitive), set cuti = true
-            if (staff.jam_kerja && staff.jam_kerja.toLowerCase().includes('cuti')) {
-              staff.cuti = true;
-            } else {
-              // Jika tidak, gunakan field cuti dari backend (jika ada)
-              staff.cuti = staff.cuti === true || staff.cuti === "true" || staff.cuti === "Cuti" ? true : false;
             const kategoriText = String(staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || staff.jam_kerja || '').toUpperCase();
             const shiftText = String(staff.shift || staff.status || staff.jam_kerja || '').toUpperCase();
             const isOff = staff.cuti === true || staff.cuti === 'true' || ['OFF','OFFDAY','OFF DAY','CUTI','LIBUR'].some(x => kategoriText.includes(x) || shiftText.includes(x));
@@ -915,22 +892,21 @@
               staff.kategori = staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || 'OFFDAY';
               if (!staff.jam_kerja) staff.jam_kerja = staff.kategori;
             }
-            
             return staff;
           });
-
+          
           // Cari data staff yang sesuai dengan user login (case-insensitive)
           if (currentUser) {
             const usernameLower = String(currentUser.username).toLowerCase();
             // Cari berdasarkan id (username) dengan case-insensitive
             currentStaff = staffData.find(s => String(s.id).toLowerCase() === usernameLower);
-
+            
             // Fallback: cari berdasarkan nama (case-insensitive) jika tidak ditemukan
             if (!currentStaff) {
               currentStaff = staffData.find(s => s.nama.toLowerCase() === currentUser.nama.toLowerCase());
             }
           }
-
+          
           updateUI();
           setLiveStatus('connected');
         } else {
@@ -966,24 +942,21 @@
         const initial = currentStaff.nama.substring(0, 2).toUpperCase();
         const isHadir = currentStaff.status === 'Sudah Absen';
         const isCuti = currentStaff.cuti;
-        let statusText = isHadir ? 'Sudah Absen' : (isCuti ? 'Cuti' : 'Belum Absen');
         const offLabel = currentStaff.kategori || currentStaff.kategori_jadwal || currentStaff.status || currentStaff.shift || currentStaff.jam_kerja || 'OFFDAY';
         let statusText = isHadir ? 'Sudah Absen' : (isCuti ? offLabel : 'Belum Absen');
         const waktu = isHadir ? formatWaktu(currentStaff.waktu) : '-';
-
+        
         elements.userInfoContainer.innerHTML = `
           <div class="user-avatar">${initial}</div>
           <div class="user-detail">
             <h3>${currentStaff.nama}</h3>
-            <p>${currentStaff.jabatan || 'Staff'} · Jam kerja ${currentStaff.jam_kerja} · ${statusText} ${waktu !== '-' ? 'jam ' + waktu : ''}</p>
             <p>${currentStaff.jabatan || 'Staff'} · ${isCuti ? 'Jadwal ' + String(offLabel).toUpperCase() : 'Jam kerja ' + currentStaff.jam_kerja} · ${statusText} ${waktu !== '-' ? 'jam ' + waktu : ''}</p>
           </div>
         `;
-
+        
         // Disable tombol jika sudah hadir atau sedang cuti
         elements.submitBtn.disabled = isHadir || isCuti;
         if (isCuti) {
-          elements.submitBtn.innerHTML = '<i class="fas fa-ban"></i> CUTI';
           elements.submitBtn.innerHTML = `<i class="fas fa-ban"></i> ${String(offLabel).toUpperCase()}`;
         } else if (isHadir) {
           elements.submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> SUDAH ABSEN';
@@ -1001,11 +974,6 @@
     // Fungsi konversi waktu "HH:MM:SS" ke detik
     function timeToSeconds(timeStr) {
       if (!timeStr) return 0;
-      const parts = timeStr.split(':');
-      if (parts.length === 3) {
-        return (+parts[0]) * 3600 + (+parts[1]) * 60 + (+parts[2]);
-      }
-      return 0;
       const m = String(timeStr).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
       if (!m) return 0;
       return (+m[1]) * 3600 + (+m[2]) * 60 + (+(m[3] || 0));
@@ -1021,12 +989,9 @@
 
     function renderTable(filter = "") {
       const tbody = elements.attendanceBody;
-      // Hanya tampilkan staff yang TIDAK CUTI (aktif) di dashboard
-      let data = staffData.filter(s => !s.cuti);
       let data = [...staffData];
 
       if (filter) {
-        data = data.filter(s => s.nama.toLowerCase().includes(filter.toLowerCase()));
         data = data.filter(s => String(s.nama || '').toLowerCase().includes(filter.toLowerCase()));
       }
 
@@ -1035,32 +1000,14 @@
         return;
       }
 
-      // ===== FITUR PINTAR DENGAN TOLERANSI 15 MENIT =====
       const nowSec = timeToSeconds(currentTimeStr);
-      const TOLERANSI = 15 * 60; // 15 menit dalam detik
       const TOLERANSI = 15 * 60;
 
-      const upcoming = [];  // Jam kerja > sekarang atau ≤ sekarang namun masih dalam toleransi 15 menit
-      const past = [];      // Jam kerja ≤ sekarang dan sudah lewat lebih dari toleransi
       const upcoming = [];
       const past = [];
       const offList = [];
 
       data.forEach(staff => {
-        const staffJamSec = timeToSeconds(staff.jam_kerja);
-        if (staffJamSec > nowSec) {
-          // Belum lewat
-          upcoming.push(staff);
-        } else {
-          // Sudah lewat atau tepat waktu
-          const selisih = nowSec - staffJamSec;
-          if (selisih <= TOLERANSI) {
-            // Masih dalam toleransi 15 menit -> anggap masih upcoming (tetap di atas)
-            upcoming.push(staff);
-          } else {
-            // Lewat lebih dari 15 menit -> pindah ke grup past (bawah)
-            past.push(staff);
-          }
         if (staff.cuti) {
           offList.push(staff);
           return;
@@ -1072,28 +1019,17 @@
         else past.push(staff);
       });
 
-      // Urutkan upcoming secara ascending (yang paling cepat duluan)
       upcoming.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      // Urutkan past secara ascending (jam kerja yang lebih awal lebih dulu) – tidak wajib, tapi rapi
       past.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
       offList.sort((a, b) => String(a.kategori || a.status || '').localeCompare(String(b.kategori || b.status || '')) || String(a.nama).localeCompare(String(b.nama)));
 
-      // Gabungkan: upcoming di atas, past di bawah
-      const sortedData = upcoming.concat(past);
-      // =================================================
       const activeList = upcoming.concat(past);
 
-      let html = '';
-      sortedData.forEach(staff => {
       const renderStaffRow = (staff) => {
         const isHadir = staff.status === 'Sudah Absen';
         const isOff = staff.cuti === true;
         const offLabel = String(staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || 'OFFDAY').toUpperCase();
         const time = formatWaktu(staff.waktu);
-        const initial = staff.nama.substring(0, 2).toUpperCase();
-        const rowClass = isHadir ? 'is-hadir' : 'is-belum';
-        
-        // Tentukan status teks dan kelas peringatan berdasarkan jam kerja dan waktu sekarang
         const initial = String(staff.nama || '?').substring(0, 2).toUpperCase();
         const rowClass = isOff ? `off-row ${offLabel.includes('CUTI') ? 'cuti-row' : 'offday-row'}` : (isHadir ? 'is-hadir' : 'is-belum');
         const chipClass = offLabel.includes('CUTI') ? 'cuti' : (isOff ? 'offday' : '');
@@ -1103,9 +1039,6 @@
         let blinkClass = '';
         let noteText = '';
         let terlambatRowClass = '';
-        
-        if (!isHadir && staff.jam_kerja) {
-          const nowSec = timeToSeconds(currentTimeStr);
 
         if (isOff) {
           statusText = offLabel;
@@ -1113,8 +1046,6 @@
           noteText = 'Tidak perlu absen';
         } else if (!isHadir && staff.jam_kerja) {
           const jamKerjaSec = timeToSeconds(staff.jam_kerja);
-          const batasAwalSec = jamKerjaSec - 15 * 60; // 15 menit sebelum jam kerja
-          
           const batasAwalSec = jamKerjaSec - 15 * 60;
 
           if (nowSec >= jamKerjaSec) {
@@ -1122,7 +1053,6 @@
             statusText = 'TERLAMBAT';
             statusClass = 'status-terlambat';
             terlambatRowClass = 'terlambat-row';
-            noteText = '❗ Terlambat';
             noteText = telat ? `❗ Terlambat ${telat}` : '❗ Terlambat';
           } else if (nowSec >= batasAwalSec && nowSec < jamKerjaSec) {
             statusText = 'BISA ABSEN';
@@ -1131,10 +1061,8 @@
             noteText = '⚠️ tolong bangunkan anak ini';
           } else {
             statusText = 'MENUNGGU';
-            noteText = '';
           }
         } else if (isHadir) {
-          // Ubah "SUDAH BANGUN" menjadi "SUDAH ABSEN"
           statusText = 'SUDAH ABSEN';
           const waktuAbsenSec = timeToSeconds(time);
           const jamKerjaSec = timeToSeconds(staff.jam_kerja);
@@ -1144,10 +1072,7 @@
             noteText = '✅ Tepat waktu';
           }
         }
-        
-        const timeText = isHadir ? time : '-';
 
-        html += `
         const timeText = isHadir && time !== '-' ? time : '-';
         const kategoriChip = isOff ? `<span class="kategori-chip ${chipClass}">${offLabel}</span>` : '';
         const jadwalText = isOff ? `${staff.jabatan || 'Staff'} · ${offLabel}` : `${staff.jabatan || 'Staff'} · ${staff.jam_kerja}`;
@@ -1157,8 +1082,6 @@
             <div class="user-info-small">
               <div class="avatar-small">${initial}</div>
               <div class="user-detail-small">
-                <h4>${staff.nama} ${noteText ? `<span class="warning-note"><i class="fas fa-exclamation-triangle"></i></span>` : ''}</h4>
-                <span>${staff.jabatan || 'Staff'} · ${staff.jam_kerja}</span>
                 <h4>${staff.nama} ${kategoriChip} ${noteText && !isOff ? `<span class="warning-note"><i class="fas fa-exclamation-triangle"></i></span>` : ''}</h4>
                 <span>${jadwalText}</span>
                 ${noteText ? `<div class="note">${noteText}</div>` : ''}
@@ -1170,7 +1093,6 @@
             </div>
           </div>
         `;
-      });
       };
 
       let html = '';
@@ -1195,7 +1117,6 @@
         return;
       }
       if (currentStaff.cuti) {
-        showToast('Anda sedang cuti, tidak dapat absen', 'warning');
         showToast('Jadwal Anda OFFDAY / CUTI, tidak dapat absen', 'warning');
         return;
       }
