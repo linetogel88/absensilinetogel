@@ -1,1180 +1,885 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ABSENSI LINE TOGEL</title>
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%92%3C/text%3E%3C/svg%3E">
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CHECKIN KANTOR - LINE TOGEL | TAB PASPOR SHIFT</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8D%3C/text%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ====== CSS SAMA SEPERTI SEBELUMNYA + TAMBAHAN UNTUK JAM KERJA & PERINGATAN ====== */
-    :root {
-      --primary: #6c5ce7;
-      --primary-glow: rgba(108, 92, 231, 0.4);
-      --secondary: #00cec9;
-      --success: #00b894;
-      --success-glow: rgba(0, 184, 148, 0.25);
-      --danger: #ff7675;
-      --warning: #fdcb6e;
-      --dark-bg: #0f0f1a;
-      --sidebar-bg: #16162a;
-      --card-bg: rgba(30, 30, 50, 0.6);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --text-main: #ffffff;
-      --text-muted: #a0a0a0;
+    :root{
+      --bg:#050711;
+      --paper:#0c1020;
+      --paper2:#11172a;
+      --line:rgba(255,255,255,.11);
+      --text:#f9fbff;
+      --muted:#98a1b8;
+      --blue:#38bdf8;
+      --violet:#8b5cf6;
+      --amber:#f59e0b;
+      --green:#16c784;
+      --red:#f43f5e;
+      --slate:#263044;
     }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{
+      font-family:'Inter',sans-serif;
+      min-height:100vh;
+      background:
+        linear-gradient(135deg,rgba(56,189,248,.12),transparent 28%),
+        linear-gradient(315deg,rgba(245,158,11,.10),transparent 28%),
+        radial-gradient(circle at 50% 0%,rgba(139,92,246,.16),transparent 32%),
+        var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    .page{max-width:1720px;margin:0 auto;padding:18px 20px 16px}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      background: var(--dark-bg);
-      color: var(--text-main);
-      overflow-x: hidden;
-      position: relative;
+    /* DESAIN BARU: command-board, tanpa sidebar, bukan model absensi */
+    .hero{
+      position:relative;
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(135deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+      border-radius:24px;
+      overflow:hidden;
+      padding:18px 20px;
+      box-shadow:0 24px 60px rgba(0,0,0,.28);
+      margin-bottom:14px;
     }
+    .hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(56,189,248,.18),transparent 35%,rgba(245,158,11,.15));pointer-events:none}
+    .heroRow{position:relative;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+    .titleWrap{display:flex;align-items:center;gap:14px;min-width:0}
+    .emblem{width:58px;height:58px;border-radius:20px;background:conic-gradient(from 180deg,var(--blue),var(--violet),var(--amber),var(--blue));display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(56,189,248,.20);font-size:24px;flex:0 0 auto}
+    .titleWrap h1{font-size:2rem;font-weight:950;letter-spacing:-.06em;line-height:1}
+    .titleWrap p{color:#c4c9d8;font-weight:700;margin-top:5px;font-size:.9rem}
+    .topActions{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+    .datePill,.statusPill,.refreshBtn,.resetAllBtn{
+      border:1px solid rgba(255,255,255,.13);background:rgba(2,6,23,.40);border-radius:16px;padding:10px 13px;color:#fff;font-weight:850;white-space:nowrap
+    }
+    .statusPill{display:flex;align-items:center;gap:8px;color:#cbd5e1}.liveDot{width:9px;height:9px;border-radius:99px;background:#64748b}.liveDot.ok{background:var(--green);box-shadow:0 0 14px var(--green)}
+    .refreshBtn{cursor:pointer;background:linear-gradient(135deg,rgba(56,189,248,.20),rgba(139,92,246,.20));border-color:rgba(56,189,248,.25)}
+    .resetAllBtn{cursor:pointer;background:linear-gradient(135deg,rgba(244,63,94,.28),rgba(245,158,11,.20));border-color:rgba(244,63,94,.35)}
+    .refreshBtn:active,.resetAllBtn:active{transform:scale(.98)}
+    .resetAllBtn:disabled{opacity:.55;cursor:not-allowed}
 
-    .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; pointer-events: none; }
-    .orb-1 { width: 400px; height: 400px; background: var(--primary); top: -100px; left: -100px; opacity: 0.15; }
-    .orb-2 { width: 400px; height: 400px; background: var(--secondary); bottom: -100px; right: -100px; opacity: 0.1; }
+    .controlBar{display:grid;grid-template-columns:1fr 360px;gap:12px;margin-bottom:14px}
+    .statsStrip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .statBox{border:1px solid rgba(255,255,255,.10);background:rgba(12,16,32,.72);border-radius:18px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:74px}
+    .statBox b{font-size:1.75rem;font-weight:950;letter-spacing:-.04em}.statBox span{display:block;color:var(--muted);font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}.statIcon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);font-size:18px}.statBox.total .statIcon{color:var(--blue)}.statBox.ok .statIcon{color:var(--green)}.statBox.wait .statIcon{color:var(--amber)}.statBox.off .statIcon{color:#c084fc}
+    .searchBox{position:relative;border:1px solid rgba(255,255,255,.12);background:rgba(2,6,23,.45);border-radius:18px;min-height:74px;display:flex;align-items:center;padding:0 14px}
+    .searchBox i{color:var(--blue);font-size:18px;margin-right:10px}.searchBox input{width:100%;background:transparent;border:0;outline:0;color:#fff;font-size:1rem;font-weight:650}.searchBox input::placeholder{color:#7b8498}
 
-    /* LOGIN PAGE */
-    .login-page {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
+    .tabBar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 0 14px;padding:5px;border:1px solid rgba(255,255,255,.12);background:rgba(2,6,23,.48);border-radius:18px;box-shadow:0 16px 34px rgba(0,0,0,.22);backdrop-filter:blur(12px)}
+    .tabBtn{position:relative;border:1px solid rgba(255,255,255,.09);background:rgba(15,23,42,.58);color:#cbd5e1;border-radius:14px;padding:13px 16px;min-height:46px;cursor:pointer;font-weight:950;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:10px;transition:.18s;overflow:hidden}
+    .tabBtn:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(56,189,248,.12),rgba(139,92,246,.10));opacity:0;transition:.18s;pointer-events:none}
+    .tabBtn:hover{border-color:rgba(56,189,248,.28);color:#fff}
+    .tabBtn.active{background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(139,92,246,.18));border-color:rgba(56,189,248,.38);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 12px 28px rgba(56,189,248,.10)}
+    .tabBtn.active:before{opacity:1}
+    .tabBtn span,.tabBtn i{position:relative;z-index:1}
+    .tabBadge{position:relative;z-index:1;min-width:22px;height:20px;padding:0 7px;border-radius:99px;background:rgba(148,163,184,.22);border:1px solid rgba(148,163,184,.22);display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:950;color:#e2e8f0}
+    .tabBtn.active .tabBadge{background:rgba(56,189,248,.20);border-color:rgba(56,189,248,.24);color:#bae6fd}
+    .tabBtn.passport.active .tabBadge{background:rgba(22,199,132,.20);border-color:rgba(22,199,132,.25);color:#9fffe0}
+    .pageView{display:none;animation:fadePage .18s ease-out}
+    .pageView.active{display:block}
+    @keyframes fadePage{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    .workArea{display:block}
+    .board{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+    .lane{position:relative;border-radius:28px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.26)}
+    .lane:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.95}
+    .lane.pagi{border:1px solid rgba(251,191,36,.30);background:linear-gradient(180deg,rgba(57,34,8,.88),rgba(13,17,30,.95) 18%,rgba(12,16,32,.92));}
+    .lane.pagi:before{background:linear-gradient(180deg,rgba(251,191,36,.16),rgba(251,191,36,0) 26%)}
+    .lane.malam{border:1px solid rgba(129,140,248,.28);background:linear-gradient(180deg,rgba(25,25,68,.92),rgba(12,16,32,.95) 18%,rgba(8,12,30,.94));}
+    .lane.malam:before{background:linear-gradient(180deg,rgba(129,140,248,.18),rgba(56,189,248,0) 26%)}
+    .laneHead{position:relative;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.10)}
+    .lane.pagi .laneHead{background:linear-gradient(90deg,rgba(251,191,36,.24),rgba(120,53,15,.22) 40%,rgba(255,255,255,.02))}
+    .lane.malam .laneHead{background:linear-gradient(90deg,rgba(129,140,248,.28),rgba(91,33,182,.22) 45%,rgba(255,255,255,.02))}
+    .laneTitle{display:flex;align-items:center;gap:12px;font-size:1.16rem;font-weight:950;letter-spacing:-.04em;text-transform:uppercase}
+    .laneTitle i{font-size:1.22rem}
+    .lane.pagi .laneTitle{color:#fff7d6}.lane.pagi .laneTitle i{color:#fbbf24}
+    .lane.malam .laneTitle{color:#ede9fe}.lane.malam .laneTitle i{color:#c4b5fd}
+    .timeChip{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:15px;font-weight:950;border:1px solid rgba(255,255,255,.13);background:rgba(2,6,23,.42);font-size:.9rem;backdrop-filter:blur(8px)}
+    .lane.pagi .timeChip{color:#fde68a;border-color:rgba(251,191,36,.24);box-shadow:inset 0 0 0 1px rgba(251,191,36,.07)}
+    .lane.malam .timeChip{color:#ddd6fe;border-color:rgba(129,140,248,.24);box-shadow:inset 0 0 0 1px rgba(129,140,248,.08)}
+    .crewGrid{position:relative;padding:13px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .person{
+      position:relative;display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;min-height:72px;padding:10px 11px;border-radius:18px;border:1px solid rgba(255,255,255,.08);overflow:hidden;backdrop-filter:blur(8px)
     }
-    .login-card {
-      background: var(--sidebar-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 30px 25px;
-      width: 100%;
-      max-width: 400px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-    .login-logo {
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 30px;
-      color: white;
-      box-shadow: 0 10px 20px var(--primary-glow);
-    }
-    .login-title {
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 5px;
-    }
-    .login-sub {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 30px;
-    }
-    .input-group {
-      position: relative;
-      margin-bottom: 20px;
-    }
-    .input-group i {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--primary);
-      font-size: 1rem;
-    }
-    .form-control {
-      width: 100%;
-      padding: 14px 14px 14px 45px;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      color: white;
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      transition: all 0.2s;
-    }
-    .form-control:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    .btn-login {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--primary), #5849c4);
-      border: none;
-      color: white;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: opacity 0.2s;
-      margin-top: 10px;
-    }
-    .btn-login:active { opacity: 0.8; }
-    .btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
-    .login-error {
-      color: var(--danger);
-      font-size: 0.9rem;
-      margin-top: 15px;
-      text-align: center;
-      min-height: 20px;
-    }
+    .lane.pagi .person{background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(255,255,255,.025));border-color:rgba(251,191,36,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+    .lane.malam .person{background:linear-gradient(135deg,rgba(129,140,248,.09),rgba(56,189,248,.03));border-color:rgba(129,140,248,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+    .person:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#475569}
+    .lane.pagi .person:before{background:linear-gradient(180deg,#f59e0b,#fbbf24)}
+    .lane.malam .person:before{background:linear-gradient(180deg,#8b5cf6,#60a5fa)}
+    .person.checked.on-time{background:linear-gradient(135deg,rgba(22,199,132,.25),rgba(22,199,132,.06));border-color:rgba(22,199,132,.45)}
+    .person.checked.on-time:before{background:var(--green)}
+    .person.checked.late{background:linear-gradient(135deg,rgba(244,63,94,.26),rgba(244,63,94,.055));border-color:rgba(244,63,94,.65)}
+    .person.checked.late:before{background:var(--red)}
+    .avatar{width:42px;height:42px;border-radius:15px;background:linear-gradient(135deg,#475569,#1f2937);display:flex;align-items:center;justify-content:center;font-weight:950;letter-spacing:.02em;color:#fff}
+    .lane.pagi .avatar{background:linear-gradient(135deg,#7c5a18,#302312)}
+    .lane.malam .avatar{background:linear-gradient(135deg,#374151,#1e1b4b)}
+    .person.checked.on-time .avatar{background:linear-gradient(135deg,#10b981,#047857)}.person.checked.late .avatar{background:linear-gradient(135deg,#f43f5e,#9f1239)}
+    .person h4{font-size:.86rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}.person p{font-size:.68rem;color:var(--muted);font-weight:750;display:flex;gap:5px;flex-wrap:wrap}.smallNote{font-size:.63rem;margin-top:3px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.on-time .smallNote{color:#7fffd3}.late .smallNote{color:#ffb3bd}.act{min-width:96px;text-align:right}
+    .btnCheck{border:0;border-radius:14px;padding:10px 12px;min-width:92px;color:#fff;font-size:.72rem;font-weight:950;cursor:pointer}
+    .lane.pagi .btnCheck{background:linear-gradient(135deg,#f59e0b,#fbbf24 55%,#fb7185);box-shadow:0 12px 24px rgba(245,158,11,.18)}
+    .lane.malam .btnCheck{background:linear-gradient(135deg,#2563eb,#7c3aed 55%,#a855f7);box-shadow:0 12px 24px rgba(124,58,237,.18)}
+    .btnCheck:hover{filter:brightness(1.08)}.btnCheck:disabled{opacity:.55;cursor:not-allowed}.btnReset{margin-top:5px;border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:5px 7px;min-width:82px;background:rgba(15,23,42,.62);color:#fcd34d;font-size:.55rem;font-weight:950;cursor:pointer}.btnReset:hover{background:rgba(245,158,11,.18);color:#fff}.btnReset:disabled{opacity:.45;cursor:not-allowed}.stateTag{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:14px;padding:8px 9px;min-width:92px;font-size:.66rem;font-weight:950}.stateTag.ok{background:rgba(22,199,132,.18);color:#7fffd3}.stateTag.late{background:rgba(244,63,94,.18);color:#ffb3bd}.timeText{text-align:center;color:#e2e8f0;font-size:.66rem;font-weight:800;margin-top:4px}
 
-    /* APP LAYOUT (DESKTOP) */
-    @media (min-width: 901px) {
-      .app-layout {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 30px;
-        padding: 30px;
-        max-width: 1400px;
-        margin: 0 auto;
-        min-height: 100vh;
-      }
+    .passportPageShell{display:grid;gap:14px}
+    .passportToolBar{display:grid;grid-template-columns:minmax(0,1fr) 360px auto;gap:12px;align-items:stretch}
+    .passportInfoCard{border:1px solid rgba(56,189,248,.20);background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(139,92,246,.08));border-radius:20px;padding:14px 16px;display:flex;align-items:center;gap:13px;min-height:74px}
+    .passportInfoCard .bigIcon{width:46px;height:46px;border-radius:16px;background:linear-gradient(135deg,#0f766e,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 12px 28px rgba(56,189,248,.14);flex:0 0 auto}
+    .passportInfoCard h3{font-size:1.03rem;font-weight:950;letter-spacing:-.04em;text-transform:uppercase}
+    .passportInfoCard p{margin-top:4px;color:#b8c4d8;font-size:.72rem;font-weight:800}
+    .passportSearch{min-height:74px}
+    .passportResetBtn{border:1px solid rgba(255,255,255,.14);background:rgba(2,6,23,.42);color:#fcd34d;border-radius:13px;padding:8px 10px;font-size:.65rem;font-weight:950;cursor:pointer;white-space:nowrap}
+    .passportResetBtn:hover{background:rgba(245,158,11,.18);color:#fff}
+    .passportResetBtn.big{min-height:74px;padding:0 18px;border-radius:18px;background:linear-gradient(135deg,rgba(245,158,11,.22),rgba(244,63,94,.14));border-color:rgba(245,158,11,.28);color:#fff}
+    .passportShiftBoard{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+    .passportPanel{position:relative;top:auto;border:1px solid rgba(56,189,248,.26);background:linear-gradient(180deg,rgba(8,47,73,.84),rgba(12,16,32,.96) 18%,rgba(7,10,22,.96));border-radius:28px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.28)}
+    .passportPanel.pagiPassport{border-color:rgba(251,191,36,.30);background:linear-gradient(180deg,rgba(57,34,8,.88),rgba(13,17,30,.95) 18%,rgba(12,16,32,.94))}
+    .passportPanel.malamPassport{border-color:rgba(129,140,248,.30);background:linear-gradient(180deg,rgba(25,25,68,.92),rgba(12,16,32,.95) 18%,rgba(8,12,30,.95))}
+    .passportHead{padding:15px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.10);background:linear-gradient(90deg,rgba(56,189,248,.20),rgba(139,92,246,.14),rgba(255,255,255,.02))}
+    .pagiPassport .passportHead{background:linear-gradient(90deg,rgba(251,191,36,.24),rgba(120,53,15,.20),rgba(255,255,255,.02))}
+    .malamPassport .passportHead{background:linear-gradient(90deg,rgba(129,140,248,.28),rgba(91,33,182,.20),rgba(255,255,255,.02))}
+    .passportHead h2{font-size:1rem;font-weight:950;letter-spacing:-.04em;display:flex;align-items:center;gap:10px;text-transform:uppercase}
+    .passportHead h2 i{color:#67e8f9}.pagiPassport .passportHead h2 i{color:#fbbf24}.malamPassport .passportHead h2 i{color:#c4b5fd}
+    .passportHead p{margin-top:4px;color:#b8c4d8;font-size:.68rem;font-weight:800}
+    .passportMiniBadge{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:28px;padding:0 10px;border-radius:99px;background:rgba(2,6,23,.38);border:1px solid rgba(255,255,255,.12);font-size:.76rem;font-weight:950;color:#e2e8f0;white-space:nowrap}
+    .pagiPassport .passportMiniBadge{color:#fde68a;border-color:rgba(251,191,36,.24)}.malamPassport .passportMiniBadge{color:#ddd6fe;border-color:rgba(129,140,248,.24)}
+    .passportStats{padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .passportStat{border:1px solid rgba(255,255,255,.10);background:rgba(2,6,23,.38);border-radius:16px;padding:10px 11px;display:flex;align-items:center;justify-content:space-between}
+    .passportStat span{color:var(--muted);font-size:.66rem;font-weight:900;text-transform:uppercase}.passportStat b{font-size:1.25rem;font-weight:950}.passportStat.done b{color:#7fffd3}.passportStat.wait b{color:#fcd34d}
+    .passportList{padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:none;overflow:visible}
+    .passportList::-webkit-scrollbar{width:7px}.passportList::-webkit-scrollbar-thumb{background:rgba(56,189,248,.35);border-radius:99px}.passportList::-webkit-scrollbar-track{background:rgba(255,255,255,.04)}
+    .passportItem{position:relative;display:grid;grid-template-columns:38px minmax(0,1fr) 40px;gap:9px;align-items:center;min-height:58px;padding:9px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.018));border-radius:17px;cursor:pointer;user-select:none}
+    .passportItem:hover{border-color:rgba(56,189,248,.28);background:linear-gradient(135deg,rgba(56,189,248,.10),rgba(255,255,255,.02))}
+    .pagiPassport .passportItem:hover{border-color:rgba(251,191,36,.30);background:linear-gradient(135deg,rgba(251,191,36,.10),rgba(255,255,255,.02))}.malamPassport .passportItem:hover{border-color:rgba(129,140,248,.30);background:linear-gradient(135deg,rgba(129,140,248,.12),rgba(255,255,255,.02))}
+    .passportItem.done{border-color:rgba(22,199,132,.46);background:linear-gradient(135deg,rgba(22,199,132,.22),rgba(22,199,132,.05))}
+    .passportIcon{width:38px;height:38px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f766e,#1e3a8a);font-weight:950;font-size:.75rem;color:#fff}.pagiPassport .passportIcon{background:linear-gradient(135deg,#7c5a18,#302312)}.malamPassport .passportIcon{background:linear-gradient(135deg,#374151,#1e1b4b)}
+    .passportItem.done .passportIcon{background:linear-gradient(135deg,#10b981,#047857)}
+    .passportInfo{min-width:0}.passportInfo b{display:block;font-size:.78rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.passportInfo small{display:block;margin-top:3px;color:var(--muted);font-size:.62rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .passportCheck{position:absolute;opacity:0;pointer-events:none}
+    .passportBox{width:32px;height:32px;border-radius:12px;border:2px solid rgba(148,163,184,.45);display:flex;align-items:center;justify-content:center;color:transparent;background:rgba(2,6,23,.35);transition:.16s}.passportItem.done .passportBox{border-color:rgba(22,199,132,.85);background:rgba(22,199,132,.22);color:#7fffd3;box-shadow:0 0 18px rgba(22,199,132,.20)}
+    .passportEmpty{grid-column:1/-1;text-align:center;color:var(--muted);padding:26px 12px;font-weight:800;border:1px dashed rgba(255,255,255,.12);border-radius:18px;background:rgba(2,6,23,.22)}
 
-      .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        position: sticky;
-        top: 30px;
-        height: fit-content;
-        background: var(--sidebar-bg);
-        padding: 25px;
-        border-radius: 24px;
-        border: 1px solid var(--glass-border);
-      }
+    .offSection{margin-top:14px;border:1px solid rgba(245,158,11,.34);background:linear-gradient(135deg,rgba(245,158,11,.13),rgba(139,92,246,.06));border-radius:24px;overflow:hidden}.offHead{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(245,158,11,.28)}.offHead h2{font-size:1rem;font-weight:950;display:flex;align-items:center;gap:10px}.offHead i{color:#f59e0b}.offGrid{padding:10px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.offItem{display:grid;grid-template-columns:38px 1fr auto;gap:9px;align-items:center;background:rgba(2,6,23,.35);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:9px}.offItem .avatar{width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,#92400e,#451a03)}.offItem.cuti .avatar{background:linear-gradient(135deg,#f59e0b,#b45309)}.offItem.offday .avatar{background:linear-gradient(135deg,#8b5cf6,#4c1d95)}.offItem h4{font-size:.78rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.offItem p{font-size:.65rem;color:var(--muted);font-weight:750}.offBadge{font-size:.62rem;font-weight:950;border-radius:12px;padding:7px 8px;white-space:nowrap}.offItem.cuti .offBadge{background:rgba(245,158,11,.18);color:#fcd34d}.offItem.offday .offBadge{background:rgba(139,92,246,.20);color:#ddd6fe}
+    .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:24px;font-weight:750}.toast{position:fixed;left:50%;bottom:20px;z-index:999;transform:translateX(-50%) translateY(80px);opacity:0;border-radius:16px;padding:13px 18px;background:#334155;color:#fff;font-weight:900;box-shadow:0 20px 40px rgba(0,0,0,.35);transition:.22s}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.success{background:var(--green)}.toast.error{background:var(--red)}.toast.warning{background:var(--amber)}.foot{text-align:center;color:var(--muted);font-size:.78rem;font-weight:700;margin:12px 0 0}
 
-      .main-content {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-      
-      .mobile-header { display: none; }
-      .web-header { display: block; text-align: center; margin-bottom: 10px; }
-      
-      .staff-list { max-height: calc(100vh - 200px); }
-    }
-
-    /* MOBILE LAYOUT */
-    @media (max-width: 900px) {
-      .app-layout { display: block; padding: 15px; }
-      .sidebar { margin-bottom: 20px; box-shadow: none; background: transparent; padding: 0; border: none; }
-      .web-header { display: none; }
-      
-      .mobile-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 0;
-        margin-bottom: 15px;
-        border-bottom: 1px solid var(--glass-border);
-      }
-      .m-logo {
-        width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary));
-        border-radius: 12px; display: flex; align-items: center; justify-content: center;
-        font-size: 18px; color: white; box-shadow: 0 5px 15px var(--primary-glow);
-      }
-      .m-title h1 { font-size: 1.1rem; font-weight: 800; }
-      .m-title p { font-size: 0.7rem; color: var(--text-muted); }
-      
-      .live-badge-m {
-        background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 20px;
-        font-size: 0.7rem; display: flex; align-items: center; gap: 5px; border: 1px solid var(--glass-border);
-      }
-      .live-dot { width: 6px; height: 6px; background: #636e72; border-radius: 50%; }
-      .live-dot.connected { background: var(--success); box-shadow: 0 0 5px var(--success); }
-      
-      .date-mobile {
-        display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.8rem;
-      }
-      .date-mobile span { background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px; color: var(--text-muted); }
-      .date-mobile i { margin-right: 5px; color: var(--primary); }
-
-      /* Stats container lebih kecil di mobile */
-      .stats-container { 
-        margin-bottom: 20px; 
-        gap: 5px;
-      }
-      .stat-box {
-        padding: 8px 5px;
-        border-radius: 12px;
-      }
-      .stat-num { 
-        font-size: 1.2rem; 
-      }
-      .stat-label { 
-        font-size: 0.55rem; 
-      }
-    }
-
-    /* KOMPONEN UMUM */
-    .stats-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .stat-box {
-      background: var(--card-bg); backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border); border-radius: 16px; padding: 15px 10px;
-      text-align: center;
-    }
-    .stat-num { font-size: 1.6rem; font-weight: 800; line-height: 1; }
-    .stat-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; }
-    .stat-box.hadir .stat-num { color: var(--success); }
-    .stat-box.belum .stat-num { color: var(--danger); }
-
-    .card {
-      background: var(--card-bg); backdrop-filter: blur(15px);
-      border: 1px solid var(--glass-border); border-radius: 20px;
-      padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    
-    .form-label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
-    
-    /* User info card */
-    .user-info-card {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: rgba(255,255,255,0.05);
-      padding: 15px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-      min-height: 80px; /* untuk skeleton */
-    }
-    .user-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: bold;
-      color: white;
-    }
-    .user-detail h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-    .user-detail p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-    
-    .btn-submit {
-      width: 100%; padding: 12px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--primary), #5849c4);
-      border: none; color: white; font-weight: 600; font-size: 0.95rem;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: opacity 0.2s;
-    }
-    .btn-submit:active { opacity: 0.8; }
-    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn-logout {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid var(--glass-border);
-      color: var(--text-main);
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 10px;
-      transition: background 0.2s;
-    }
-    .btn-logout:hover {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .list-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 15px;
-    }
-    .list-title { font-size: 1rem; font-weight: 700; }
-    
-    .search-box { position: relative; width: 150px; }
-    .search-box input { padding: 6px 10px 6px 30px; font-size: 0.8rem; width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; color: white; }
-    .search-box i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 0.7rem; color: var(--text-muted); }
-
-    .staff-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 5px; }
-    .staff-list::-webkit-scrollbar { width: 4px; }
-    .staff-list::-webkit-scrollbar-thumb { background: rgba(108, 92, 231, 0.5); border-radius: 10px; }
-
-    .staff-row {
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(255,255,255,0.02); padding: 12px 15px; border-radius: 12px;
-      border: 1px solid transparent; transition: all 0.2s;
-    }
-    
-    .staff-row.is-hadir {
-      background: var(--success-glow);
-      border-color: rgba(0, 184, 148, 0.2);
-    }
-    .staff-row.is-hadir .status-badge { background: var(--success); color: white; }
-    .staff-row.is-hadir .avatar { background: var(--success); }
-
-    .staff-row.is-belum .status-badge { background: rgba(255,255,255,0.1); color: var(--text-muted); }
-    
-    /* Tambahan untuk status peringatan */
-    .status-badge.status-terlambat { background: var(--danger); color: white; }
-    .status-badge.status-bisa { background: var(--warning); color: #2d3436; }
-
-    /* Efek kedap-kedip untuk baris dengan status BISA ABSEN */
-    @keyframes blinkWarning {
-      0% { background-color: rgba(253, 203, 110, 0.1); border-color: var(--warning); }
-      50% { background-color: rgba(253, 203, 110, 0.3); border-color: var(--warning); }
-      100% { background-color: rgba(253, 203, 110, 0.1); border-color: var(--warning); }
-    }
-    .staff-row.blink-warning {
-      animation: blinkWarning 1s infinite;
-      border: 1px solid var(--warning);
-    }
-
-    /* Warna merah untuk baris terlambat */
-    .staff-row.terlambat-row {
-      background: rgba(255, 118, 117, 0.1);
-      border-color: var(--danger);
-    }
-
-    .staff-row.off-row {
-      background: rgba(120, 120, 120, 0.16);
-      border-color: rgba(255, 255, 255, 0.10);
-      opacity: 0.78;
-    }
-    .staff-row.off-row .status-badge {
-      background: rgba(255, 118, 117, 0.85);
-      color: white;
-    }
-
-
-    .section-divider {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 14px 2px 6px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--text-muted);
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-    }
-    .section-divider.off-section {
-      background: rgba(253, 203, 110, 0.10);
-      border-color: rgba(253, 203, 110, 0.22);
-      color: var(--warning);
-    }
-    .kategori-chip {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2px 7px;
-      margin-left: 6px;
-      border-radius: 999px;
-      font-size: 0.58rem;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-      vertical-align: middle;
-      background: rgba(255,255,255,0.10);
-      color: rgba(255,255,255,0.82);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .kategori-chip.offday {
-      background: rgba(142, 124, 195, 0.35);
-      color: #dcd5ff;
-      border-color: rgba(142, 124, 195, 0.55);
-    }
-    .kategori-chip.cuti {
-      background: rgba(253, 203, 110, 0.22);
-      color: var(--warning);
-      border-color: rgba(253, 203, 110, 0.45);
-    }
-    .staff-row.off-row.cuti-row {
-      background: rgba(253, 203, 110, 0.09);
-      border-color: rgba(253, 203, 110, 0.18);
-    }
-    .staff-row.off-row.offday-row {
-      background: rgba(142, 124, 195, 0.12);
-      border-color: rgba(142, 124, 195, 0.22);
-    }
-
-    .user-info-small {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .avatar-small {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, #636e72, #2d3436);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.8rem; color: white;
-    }
-    
-    .user-detail-small h4 { font-size: 0.9rem; font-weight: 600; }
-    .user-detail-small span { font-size: 0.7rem; color: var(--text-muted); }
-
-    .status-badge {
-      padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 700;
-      text-transform: uppercase; display: inline-block; min-width: 100px; text-align: center;
-    }
-    .time-display { font-size: 0.7rem; color: rgba(255,255,255,0.7); font-weight: 500; margin-top: 4px; text-align: center; }
-
-    /* Tooltip atau catatan kecil */
-    .warning-note {
-      font-size: 0.6rem;
-      color: var(--warning);
-      margin-left: 5px;
-      display: inline-block;
-      font-weight: 600;
-    }
-    .staff-row .note {
-      font-size: 0.6rem;
-      color: var(--warning);
-      margin-top: 2px;
-      font-style: italic;
-    }
-
-    /* Loading Overlay */
-    .loading-overlay {
-      position: fixed; inset: 0; background: var(--dark-bg); z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: opacity 0.2s;
-    }
-    .loader-circle {
-      width: 50px; height: 50px; border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.1);
-      border-top-color: var(--primary);
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Skeleton loading */
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    .skeleton {
-      background: linear-gradient(90deg, #2a2a3a 25%, #3a3a4a 50%, #2a2a3a 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 8px;
-    }
-    .skeleton-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 16px;
-      background: linear-gradient(90deg, #2a2a3a 25%, #3a3a4a 50%, #2a2a3a 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-    }
-    .skeleton-line {
-      height: 16px;
-      width: 100%;
-      margin-bottom: 8px;
-      background: linear-gradient(90deg, #2a2a3a 25%, #3a3a4a 50%, #2a2a3a 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 4px;
-    }
-    .skeleton-line.short {
-      width: 60%;
-    }
-
-    .loader-text { margin-top: 15px; color: var(--text-muted); font-size: 0.8rem; }
-
-    /* Toast */
-    .toast {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
-      padding: 12px 20px; border-radius: 10px; font-size: 0.9rem; font-weight: 500;
-      z-index: 10000; opacity: 0; transition: all 0.2s;
-      background: #333; color: white;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-    .toast.success { background: var(--success); }
-    .toast.error { background: var(--danger); }
-    .toast.warning { background: #fdcb6e; color: #2d3436; }
-
-    #mainApp { display: none; }
+    @media(max-width:1380px){.passportToolBar{grid-template-columns:1fr 320px auto}.passportList{grid-template-columns:1fr}}
+    @media(max-width:1260px){.controlBar{grid-template-columns:1fr}.searchBox{min-height:56px}.board{grid-template-columns:1fr}.crewGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.offGrid{grid-template-columns:repeat(2,1fr)}.passportToolBar{grid-template-columns:1fr}.passportSearch,.passportResetBtn.big{min-height:56px}.passportShiftBoard{grid-template-columns:1fr}.passportList{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:760px){.page{padding:10px}.heroRow{grid-template-columns:1fr}.topActions{justify-content:flex-start}.titleWrap h1{font-size:1.55rem}.emblem{width:48px;height:48px}.tabBar{grid-template-columns:1fr}.tabBtn{min-height:42px;padding:11px 12px}.statsStrip{grid-template-columns:repeat(2,1fr)}.crewGrid{grid-template-columns:1fr}.person{grid-template-columns:38px 1fr}.act{grid-column:1/3;width:100%}.btnCheck,.stateTag{width:100%}.passportList{grid-template-columns:1fr}.offGrid{grid-template-columns:1fr}.controlBar{gap:8px}.hero{padding:14px}.statBox{min-height:62px;padding:10px}.statBox b{font-size:1.35rem}}
+    @media(min-width:1261px) and (max-height:850px){.page{padding:10px 16px}.hero{padding:12px 16px;margin-bottom:9px}.emblem{width:48px;height:48px}.titleWrap h1{font-size:1.65rem}.controlBar{margin-bottom:9px}.statBox{min-height:58px;padding:9px 12px}.statBox b{font-size:1.35rem}.statIcon{width:34px;height:34px}.laneHead{padding:11px 13px}.crewGrid{gap:7px;padding:9px}.person{min-height:59px;padding:8px;grid-template-columns:36px 1fr 88px}.avatar{width:36px;height:36px;border-radius:13px}.person h4{font-size:.76rem}.person p{font-size:.61rem}.btnCheck{min-width:80px;padding:8px 8px;font-size:.64rem}.btnReset{min-width:72px;padding:4px 6px;font-size:.50rem}.stateTag{min-width:80px;padding:7px 7px;font-size:.58rem}.smallNote{font-size:.56rem}.timeText{font-size:.58rem}.offSection{margin-top:9px}.offHead{padding:9px 13px}.offGrid{gap:7px;padding:8px}.offItem{padding:7px}.offItem h4{font-size:.69rem}.foot{display:none}}
   </style>
 </head>
 <body>
-
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
-
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loader-circle"></div>
-    <div class="loader-text" id="loadingText">MEMERIKSA SESSION...</div>
-  </div>
-
-  <!-- Halaman Login -->
-  <div id="loginPage" class="login-page" style="display: none;">
-    <div class="login-card">
-      <div class="login-logo">
-        <i class="fas fa-fingerprint"></i>
+  <div class="page">
+    <section class="hero">
+      <div class="heroRow">
+        <div class="titleWrap">
+          <div class="emblem"><i class="fas fa-location-crosshairs" id="emblemIcon"></i></div>
+          <div>
+            <h1 id="mainTitle">CHECKIN KANTOR</h1>
+            <p id="subTitle">LINE TOGEL · Arrival Board Staff</p>
+          </div>
+        </div>
+        <div class="topActions">
+          <div class="datePill"><i class="fas fa-calendar-day"></i> <span id="dateText">Memuat...</span></div>
+          <div class="statusPill"><span class="liveDot" id="liveDot"></span><span id="liveText">OFFLINE</span></div>
+          <button class="refreshBtn" id="refreshBtn"><i class="fas fa-rotate-right"></i> Refresh</button>
+          <button class="resetAllBtn" id="resetAllBtn" title="Reset semua staff yang sudah checkin menjadi Belum Checkin"><i class="fas fa-eraser"></i> Reset All</button>
+        </div>
       </div>
-      <div class="login-title">LINE TOGEL</div>
-      <div class="login-sub">Absensi Harian</div>
+    </section>
 
-      <div class="input-group">
-        <i class="fas fa-user"></i>
-        <input type="text" id="loginUsername" class="form-control" placeholder="Username" autocomplete="off">
-      </div>
-      <div class="input-group">
-        <i class="fas fa-lock"></i>
-        <input type="password" id="loginPassword" class="form-control" placeholder="Password">
-      </div>
-
-      <button class="btn-login" id="loginBtn" onclick="handleLogin()">
-        <i class="fas fa-sign-in-alt"></i> MASUK
+    <nav class="tabBar" aria-label="Pilih halaman dashboard">
+      <button class="tabBtn active" type="button" data-tab="checkin" id="tabCheckinBtn">
+        <i class="fas fa-location-dot"></i><span>Absen Checkin</span><span class="tabBadge" id="tabCheckinBadge">0</span>
       </button>
-      <div class="login-error" id="loginError"></div>
-    </div>
-  </div>
+      <button class="tabBtn passport" type="button" data-tab="passport" id="tabPassportBtn">
+        <i class="fas fa-passport"></i><span>Kumpul Paspor</span><span class="tabBadge" id="tabPassportBadge">0</span>
+      </button>
+    </nav>
 
-  <!-- Aplikasi Utama -->
-  <div class="app-layout" id="mainApp">
-    
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      
-      <!-- Web Header (Desktop) -->
-      <div class="web-header">
-        <div style="width:60px;height:60px;background:linear-gradient(135deg, var(--primary), var(--secondary));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:26px;box-shadow: 0 10px 20px var(--primary-glow);">
-          <i class="fas fa-fingerprint"></i>
+    <section class="pageView active" id="checkinPage">
+      <div class="controlBar">
+        <div class="statsStrip">
+          <div class="statBox total"><div><span>Total Aktif</span><b id="totalStaff">0</b></div><div class="statIcon"><i class="fas fa-user-group"></i></div></div>
+          <div class="statBox ok"><div><span>Sudah</span><b id="checkedCount">0</b></div><div class="statIcon"><i class="fas fa-circle-check"></i></div></div>
+          <div class="statBox wait"><div><span>Belum</span><b id="pendingCount">0</b></div><div class="statIcon"><i class="fas fa-hourglass-half"></i></div></div>
+          <div class="statBox off"><div><span>Off / Cuti</span><b id="offCount">0</b></div><div class="statIcon"><i class="fas fa-user-slash"></i></div></div>
         </div>
-        <h1 style="font-size:1.2rem;font-weight:800;">LINE TOGEL</h1>
-        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:5px;">Absensi Harian</p>
-        
-        <div class="live-badge-m" style="justify-content:center; margin-top:10px; margin-bottom:20px;">
-          <div class="live-dot" id="liveDotDesk"></div>
-          <span id="liveTextDesk">OFFLINE</span>
-        </div>
+        <label class="searchBox"><i class="fas fa-search"></i><input id="searchInput" type="text" placeholder="Cari nama staff..."></label>
       </div>
 
-      <!-- Mobile Header -->
-      <div class="mobile-header">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <div class="m-logo"><i class="fas fa-fingerprint"></i></div>
-          <div class="m-title">
-            <h1>LINE TOGEL</h1>
-            <p id="currentTimeMobile">--:--:--</p>
+      <div class="workArea">
+        <main class="board">
+          <section class="lane pagi">
+            <div class="laneHead">
+              <div class="laneTitle"><i class="fas fa-sun"></i> SHIFT PAGI</div>
+              <div class="timeChip"><i class="far fa-clock"></i>07:30:00</div>
+            </div>
+            <div class="crewGrid" id="pagiList"></div>
+          </section>
+          <section class="lane malam">
+            <div class="laneHead">
+              <div class="laneTitle"><i class="fas fa-moon"></i> SHIFT MALAM</div>
+              <div class="timeChip"><i class="far fa-clock"></i>19:30:00</div>
+            </div>
+            <div class="crewGrid" id="malamList"></div>
+          </section>
+        </main>
+      </div>
+
+      <section class="offSection">
+        <div class="offHead"><h2><i class="fas fa-ban"></i> NON AKTIF HARI INI</h2><strong id="offInfo">0 Staff</strong></div>
+        <div class="offGrid" id="offList"></div>
+      </section>
+    </section>
+
+    <section class="pageView" id="passportPage">
+      <div class="passportPageShell">
+        <div class="passportToolBar">
+          <div class="passportInfoCard">
+            <div class="bigIcon"><i class="fas fa-passport"></i></div>
+            <div>
+              <h3>Checkin Paspor / Kumpul Paspor</h3>
+              <p>Halaman terpisah. Nama mengikuti data Absen Checkin / Jadwal hari ini dan tersimpan ke database.</p>
+            </div>
           </div>
+          <label class="searchBox passportSearch"><i class="fas fa-search"></i><input id="passportSearchInput" type="text" placeholder="Cari nama paspor..."></label>
+          <button class="passportResetBtn big" id="resetPassportBtn" title="Reset ceklis paspor hari ini"><i class="fas fa-rotate-left"></i> Reset Paspor</button>
         </div>
-        <div class="live-badge-m">
-          <div class="live-dot" id="liveDotMob"></div>
-          <span id="liveTextMob">OFFLINE</span>
+
+        <div class="passportShiftBoard">
+          <aside class="passportPanel pagiPassport">
+            <div class="passportHead">
+              <div>
+                <h2><i class="fas fa-sun"></i> PASPOR SHIFT PAGI</h2>
+                <p>Nama mengikuti kolom Shift Pagi pada jadwal absen checkin hari ini.</p>
+              </div>
+              <span class="passportMiniBadge" id="passportTotalPagi">0 Staff</span>
+            </div>
+            <div class="passportStats">
+              <div class="passportStat done"><span>Sudah Kumpul</span><b id="passportDonePagi">0</b></div>
+              <div class="passportStat wait"><span>Belum Kumpul</span><b id="passportPendingPagi">0</b></div>
+            </div>
+            <div class="passportList" id="passportPagiList"></div>
+          </aside>
+
+          <aside class="passportPanel malamPassport">
+            <div class="passportHead">
+              <div>
+                <h2><i class="fas fa-moon"></i> PASPOR SHIFT MALAM</h2>
+                <p>Nama mengikuti kolom Shift Malam pada jadwal absen checkin hari ini.</p>
+              </div>
+              <span class="passportMiniBadge" id="passportTotalMalam">0 Staff</span>
+            </div>
+            <div class="passportStats">
+              <div class="passportStat done"><span>Sudah Kumpul</span><b id="passportDoneMalam">0</b></div>
+              <div class="passportStat wait"><span>Belum Kumpul</span><b id="passportPendingMalam">0</b></div>
+            </div>
+            <div class="passportList" id="passportMalamList"></div>
+          </aside>
         </div>
       </div>
-
-      <div class="date-mobile" id="dateMobile">
-        <span><i class="fas fa-calendar"></i> <span id="currentDateMobile">-</span></span>
-      </div>
-
-      <!-- Stats (sudah diperkecil untuk mobile via CSS) -->
-      <div class="stats-container">
-        <div class="stat-box">
-          <div class="stat-num" id="totalStaff">0</div>
-          <div class="stat-label">Total</div>
-        </div>
-        <div class="stat-box hadir">
-          <div class="stat-num" id="presentCount">0</div>
-          <div class="stat-label">Absen</div> <!-- Ubah "Bangun" menjadi "Absen" -->
-        </div>
-        <div class="stat-box belum">
-          <div class="stat-num" id="absentCount">0</div>
-          <div class="stat-label">Belum</div>
-        </div>
-      </div>
-
-      <!-- User Info dan Absensi -->
-      <div class="card" style="margin-bottom:0;">
-        <div class="form-label">Anda Login Sebagai</div>
-        <div id="userInfoContainer" class="user-info-card">
-          <!-- Akan diisi oleh JavaScript, default skeleton akan ditampilkan jika tidak ada data -->
-        </div>
-        <button class="btn-submit" id="submitBtn" onclick="handleMarkAttendance()">
-          <i class="fas fa-check-circle"></i> ABSEN
-        </button>
-        <button class="btn-logout" id="logoutBtn" onclick="handleLogout()">
-          <i class="fas fa-sign-out-alt"></i> LOGOUT
-        </button>
-      </div>
-      
-      <div style="margin-top:auto; text-align:center; color:var(--text-muted); font-size:0.75rem; display:none;" id="desktopDateWrap">
-         <span id="currentDateDesktop"></span>
-      </div>
-
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-      
-      <div class="card" style="margin-bottom:0; height:100%; display:flex; flex-direction:column;">
-        <div class="list-header">
-          <div class="list-title">Rekap Hari Ini</div>
-          <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="staffSearch" placeholder="Cari..." oninput="filterTable()">
-          </div>
-        </div>
-        <div class="staff-list" id="attendanceBody"></div>
-      </div>
-
-    </div>
+    </section>
+    <div class="foot"><i class="fas fa-circle-info"></i> Dashboard ini khusus checkin kedatangan kantor. Data akan berganti otomatis mengikuti JADWAL SHIFT harian.</div>
   </div>
-
   <div class="toast" id="toast"></div>
 
   <script>
-    // ========== KONFIGURASI ==========
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxRNqN3xohIU8l04bFubc_G5Ca4GJCLC0chLHbKz971ut97IxywgcFp7P7ZaC3iBF8Dvw/exec';
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbweh1Z2FZtVOrahg63azhbpheA33NqBKe9I0JlCpOjyuTJRWQXZM-5Vfss2gomhE0G_/exec';
 
-    let staffData = [];
-    let isProcessing = false;
-    let currentUser = null; // { username, nama }
-    let currentStaff = null; // data staff yang sesuai dengan user login
-    let currentTimeStr = "00:00:00"; // untuk menyimpan waktu sekarang format HH:MM:SS
+    let allData = [];
+    let passportState = {};
+    let currentDateKey = '';
+    let passportLoading = false;
+    const pendingPassports = new Set();
+    const pendingCheckins = new Set();
+    const pendingResets = new Set();
+    let isResetAllBusy = false;
+    let isLoading = false;
+    let lastLoadAt = 0;
+    let searchTimer = null;
+    let dataSignature = '';
+    let activeTab = 'checkin';
+    const REALTIME_REFRESH_MS = 5000;
 
-    // Elemen DOM
-    const elements = {
-      loading: document.getElementById('loadingOverlay'),
-      loadingText: document.getElementById('loadingText'),
-      loginPage: document.getElementById('loginPage'),
-      mainApp: document.getElementById('mainApp'),
-      loginUsername: document.getElementById('loginUsername'),
-      loginPassword: document.getElementById('loginPassword'),
-      loginBtn: document.getElementById('loginBtn'),
-      loginError: document.getElementById('loginError'),
-      userInfoContainer: document.getElementById('userInfoContainer'),
-      submitBtn: document.getElementById('submitBtn'),
-      logoutBtn: document.getElementById('logoutBtn'),
-      attendanceBody: document.getElementById('attendanceBody'),
+    const els = {
+      dateText: document.getElementById('dateText'),
       totalStaff: document.getElementById('totalStaff'),
-      presentCount: document.getElementById('presentCount'),
-      absentCount: document.getElementById('absentCount'),
+      checkedCount: document.getElementById('checkedCount'),
+      pendingCount: document.getElementById('pendingCount'),
+      offCount: document.getElementById('offCount'),
+      pagiList: document.getElementById('pagiList'),
+      malamList: document.getElementById('malamList'),
+      offList: document.getElementById('offList'),
+      offInfo: document.getElementById('offInfo'),
+      searchInput: document.getElementById('searchInput'),
+      refreshBtn: document.getElementById('refreshBtn'),
+      resetAllBtn: document.getElementById('resetAllBtn'),
+      liveDot: document.getElementById('liveDot'),
+      liveText: document.getElementById('liveText'),
       toast: document.getElementById('toast'),
-      liveDotMob: document.getElementById('liveDotMob'),
-      liveTextMob: document.getElementById('liveTextMob'),
-      currentTimeMobile: document.getElementById('currentTimeMobile'),
-      currentDateMobile: document.getElementById('currentDateMobile'),
-      liveDotDesk: document.getElementById('liveDotDesk'),
-      liveTextDesk: document.getElementById('liveTextDesk'),
-      desktopDateWrap: document.getElementById('desktopDateWrap'),
-      currentDateDesktop: document.getElementById('currentDateDesktop'),
-      staffSearch: document.getElementById('staffSearch')
+      passportPagiList: document.getElementById('passportPagiList'),
+      passportMalamList: document.getElementById('passportMalamList'),
+      passportDonePagi: document.getElementById('passportDonePagi'),
+      passportPendingPagi: document.getElementById('passportPendingPagi'),
+      passportDoneMalam: document.getElementById('passportDoneMalam'),
+      passportPendingMalam: document.getElementById('passportPendingMalam'),
+      passportTotalPagi: document.getElementById('passportTotalPagi'),
+      passportTotalMalam: document.getElementById('passportTotalMalam'),
+      resetPassportBtn: document.getElementById('resetPassportBtn'),
+      passportSearchInput: document.getElementById('passportSearchInput'),
+      tabCheckinBtn: document.getElementById('tabCheckinBtn'),
+      tabPassportBtn: document.getElementById('tabPassportBtn'),
+      tabCheckinBadge: document.getElementById('tabCheckinBadge'),
+      tabPassportBadge: document.getElementById('tabPassportBadge'),
+      checkinPage: document.getElementById('checkinPage'),
+      passportPage: document.getElementById('passportPage'),
+      mainTitle: document.getElementById('mainTitle'),
+      subTitle: document.getElementById('subTitle'),
+      emblemIcon: document.getElementById('emblemIcon')
     };
 
-    // ========== INISIALISASI ==========
-    (function init() {
-      const savedUser = sessionStorage.getItem('currentUser');
-      if (savedUser) {
-        try {
-          currentUser = JSON.parse(savedUser);
-          showMainApp();
-        } catch (e) {
-          sessionStorage.removeItem('currentUser');
-          showLogin();
-        }
-      } else {
-        showLogin();
-      }
-
-      if (window.location.protocol === 'file:') {
-        elements.loadingText.innerText = "Buka via hosting (file:// tidak didukung)";
-        throw new Error("Local file blocked");
-      }
-
-      updateClock();
-      setInterval(updateClock, 1000);
-    })();
-
-    function showLogin() {
-      elements.loading.style.display = 'none';
-      elements.loginPage.style.display = 'flex';
-      elements.mainApp.style.display = 'none';
+    function setLive(ok){
+      els.liveDot.className = 'liveDot ' + (ok ? 'ok' : '');
+      els.liveText.textContent = ok ? 'ONLINE' : 'OFFLINE';
     }
 
-    function showMainApp() {
-      elements.loading.style.display = 'none';
-      elements.loginPage.style.display = 'none';
-      elements.mainApp.style.display = 'grid';
-      // Tampilkan skeleton segera
-      showSkeletonUserInfo();
-      startSync();
-      if (window.innerWidth > 900) {
-        elements.desktopDateWrap.style.display = 'block';
-      }
-    }
-
-    function showSkeletonUserInfo() {
-      elements.userInfoContainer.innerHTML = `
-        <div style="display:flex; align-items:center; gap:15px; width:100%;">
-          <div class="skeleton-avatar"></div>
-          <div style="flex:1">
-            <div class="skeleton-line short"></div>
-            <div class="skeleton-line" style="width:80%;"></div>
-          </div>
-        </div>
-      `;
-    }
-
-    function getWibNow() {
-      return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
-    }
-
-    function updateClock() {
-      const now = getWibNow();
-      const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-      const dStr = `${days[now.getDay()]}, ${now.toLocaleDateString('id-ID')} WIB`;
-      const tStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-      
-      // Simpan currentTimeStr untuk perbandingan jam kerja
-      currentTimeStr = tStr;
-      
-      if (elements.currentTimeMobile) elements.currentTimeMobile.innerText = tStr;
-      if (elements.currentDateMobile) elements.currentDateMobile.innerText = dStr;
-      if (elements.currentDateDesktop) elements.currentDateDesktop.innerText = dStr;
-
-      // Perbarui tampilan tabel setiap detik agar peringatan waktu real-time
-      filterTable();
-    }
-
-    function formatWaktu(waktuStr) {
-      // Jangan convert ke new Date(), karena bisa berubah akibat timezone/browser.
-      // Ambil jam persis dari backend / Google Sheet.
-      const raw = String(waktuStr || '').trim();
-      if (!raw || raw === '-' || raw.toLowerCase() === 'null' || raw.toLowerCase() === 'undefined') return '-';
-      const m = raw.match(/(\d{1,2})[:.](\d{2})(?::(\d{2}))?/);
-      if (!m) return '-';
-      return `${String(m[1]).padStart(2, '0')}:${m[2]}:${m[3] || '00'}`;
-    }
-
-    function setLiveStatus(status) {
-      // Ubah teks LIVE menjadi ONLINE
-      const dotClass = status === 'connected' ? 'connected' : '';
-      const text = status === 'connected' ? 'ONLINE' : 'OFFLINE';
-      if (elements.liveDotMob) {
-        elements.liveDotMob.className = `live-dot ${dotClass}`;
-        elements.liveTextMob.innerText = text;
-      }
-      if (elements.liveDotDesk) {
-        elements.liveDotDesk.className = `live-dot ${dotClass}`;
-        elements.liveTextDesk.innerText = text;
-      }
-    }
-
-    // ========== API REQUEST DENGAN HANDLING RESPON ==========
-    async function apiRequest(action, method = 'GET', body = null) {
-      let url = BACKEND_URL + '?action=' + action + '&_=' + Date.now();
-      let options = { 
-        method: method, 
-        mode: 'cors', 
-        cache: 'no-cache',
-        headers: {}
-      };
-      
-      if (method === 'POST') {
-        options.body = JSON.stringify(body);
+    async function api(action, method='GET', body=null){
+      const url = BACKEND_URL + '?action=' + encodeURIComponent(action) + '&_=' + Date.now();
+      const options = { method, mode:'cors', cache:'no-cache', headers:{} };
+      if(method === 'POST'){
+        options.body = JSON.stringify(body || {});
         options.headers['Content-Type'] = 'text/plain';
       }
+      const res = await fetch(url, options);
+      const text = await res.text();
+      try { return JSON.parse(text); } catch(e){ throw new Error('Response backend bukan JSON: ' + text.slice(0,150)); }
+    }
 
-      try {
-        console.log('Mengirim request ke:', url, options);
-        const response = await fetch(url, options);
-        const text = await response.text();
-        console.log('Respons mentah:', text);
-        
-        // Coba cek apakah respons dimulai dengan { atau [ (JSON)
-        if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
-          return JSON.parse(text);
-        } else {
-          // Jika bukan JSON, mungkin error HTML
-          console.error('Respons bukan JSON:', text);
-          throw new Error('Server mengembalikan data bukan JSON. Periksa URL backend atau konsol untuk detail.');
+    async function loadData(silent=false, force=false){
+      if(isLoading) return;
+      if(silent && (pendingCheckins.size || pendingResets.size || isResetAllBusy)) return;
+
+      const now = Date.now();
+      if(silent && !force && now - lastLoadAt < REALTIME_REFRESH_MS - 300) return;
+
+      isLoading = true;
+      try{
+        const result = await api('loadCheckin');
+        if(!result.success) throw new Error(result.message || 'Gagal load data');
+
+        const newData = Array.isArray(result.data) ? result.data : [];
+        const newSignature = JSON.stringify({
+          tanggal: result.tanggal || '',
+          data: newData.map(x => [x.id, x.nama, x.status_checkin, x.waktu_checkin, x.keterangan, x.telat, x.shift, x.kategori])
+        });
+
+        lastLoadAt = Date.now();
+        setLive(true);
+
+        const nextDateKey = makePassportDateKey(result.tanggalKey || result.tanggal || currentWibDateKey());
+        const shouldReloadPassport = nextDateKey !== currentDateKey || force || !silent;
+        if(nextDateKey !== currentDateKey) currentDateKey = nextDateKey;
+        if(shouldReloadPassport) loadPassportState(true);
+
+        // Render hanya kalau data berubah, supaya dashboard tetap ringan dan responsif.
+        if(force || !silent || newSignature !== dataSignature){
+          dataSignature = newSignature;
+          allData = newData;
+          els.dateText.textContent = result.tanggal || '-';
+          renderAll();
         }
-      } catch (fetchError) {
-        console.error('Fetch error:', fetchError);
-        throw new Error('Koneksi error: ' + fetchError.message);
-      }
-    }
-
-    // ========== LOGIN (CASE-INSENSITIVE) ==========
-    async function handleLogin() {
-      // Ubah username ke huruf kecil agar case-insensitive saat dikirim ke backend
-      const rawUsername = elements.loginUsername.value.trim();
-      const username = rawUsername.toLowerCase();   // <--- CASE-INSENSITIVE
-      const password = elements.loginPassword.value.trim();
-      
-      if (!rawUsername || !password) {
-        elements.loginError.innerText = 'Username dan password harus diisi';
-        return;
-      }
-
-      elements.loginBtn.disabled = true;
-      elements.loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-      elements.loginError.innerText = '';
-
-      try {
-        const result = await apiRequest('login', 'POST', { username, password });
-        console.log('Hasil login:', result);
-        if (result.success) {
-          currentUser = result.user;
-          sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-          showMainApp();
-        } else {
-          elements.loginError.innerText = result.message || 'Login gagal';
+      }catch(err){
+        setLive(false);
+        if(!silent) showToast('Gagal memuat data: ' + err.message, 'error');
+        if(!allData.length){
+          els.pagiList.innerHTML = '<div class="empty">Gagal memuat data checkin</div>';
+          els.malamList.innerHTML = '<div class="empty">Gagal memuat data checkin</div>';
         }
-      } catch (err) {
-        elements.loginError.innerText = err.message;
-      } finally {
-        elements.loginBtn.disabled = false;
-        elements.loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> MASUK';
+      }finally{
+        isLoading = false;
       }
     }
 
-    // ========== LOGOUT ==========
-    function handleLogout() {
-      sessionStorage.removeItem('currentUser');
-      currentUser = null;
-      currentStaff = null;
-      showLogin();
+    function renderAll(){
+      const q = (els.searchInput ? els.searchInput.value : '').trim().toLowerCase();
+      const pQ = (els.passportSearchInput ? els.passportSearchInput.value : '').trim().toLowerCase();
+
+      let checkinData = allData;
+      if(q) checkinData = checkinData.filter(x => String(x.nama || '').toLowerCase().includes(q) || String(x.jabatan || '').toLowerCase().includes(q));
+
+      let passportData = allData.filter(x => !x.off);
+      if(pQ) passportData = passportData.filter(x => String(x.nama || '').toLowerCase().includes(pQ) || String(x.jabatan || '').toLowerCase().includes(pQ) || String(x.shift || '').toLowerCase().includes(pQ));
+
+      const active = allData.filter(x => !x.off);
+      const checked = active.filter(x => x.status_checkin === 'Sudah Checkin');
+      const pending = active.filter(x => x.status_checkin !== 'Sudah Checkin');
+      const off = allData.filter(x => x.off);
+      els.totalStaff.textContent = active.length;
+      els.checkedCount.textContent = checked.length;
+      els.pendingCount.textContent = pending.length;
+      els.offCount.textContent = off.length;
+      els.offInfo.textContent = off.length + ' Staff';
+
+      updatePassportStats(active);
+      updateTabBadges(active, pending);
+      renderPassport(passportData);
+
+      renderList(els.pagiList, checkinData.filter(x => !x.off && String(x.shift).toLowerCase() === 'pagi'));
+      renderList(els.malamList, checkinData.filter(x => !x.off && String(x.shift).toLowerCase() === 'malam'));
+      renderOff(checkinData.filter(x => x.off));
     }
 
-    // ========== SINKRONISASI DATA STAFF ==========
-    async function startSync() {
-      try {
-        const result = await apiRequest('load');
-        if (result.success) {
-          // Filter staff dengan nama tidak kosong, baca OFFDAY/CUTI dari backend
-          staffData = result.data.filter(staff => staff.nama && staff.nama.trim() !== "").map(staff => {
-            const kategoriText = String(staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || staff.jam_kerja || '').toUpperCase();
-            const shiftText = String(staff.shift || staff.status || staff.jam_kerja || '').toUpperCase();
-            const isOff = staff.cuti === true || staff.cuti === 'true' || ['OFF','OFFDAY','OFF DAY','CUTI','LIBUR'].some(x => kategoriText.includes(x) || shiftText.includes(x));
-            staff.cuti = isOff;
-
-            // KUNCI JAM KERJA: jangan ambil jam dari sheet kalau shift aktif.
-            // PAGI wajib 07:45:00, MALAM wajib 19:45:00.
-            if (!staff.cuti) {
-              const sft = String(staff.shift || '').toUpperCase();
-              if (sft.includes('MALAM')) staff.jam_kerja = '19:45:00';
-              else if (sft.includes('PAGI')) staff.jam_kerja = '07:45:00';
-              else if (!staff.jam_kerja) staff.jam_kerja = '07:45:00';
-            }
-
-            // Untuk OFFDAY/CUTI, tampilkan labelnya sebagai jam kerja.
-            if (staff.cuti) {
-              staff.kategori = staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || 'OFFDAY';
-              if (!staff.jam_kerja) staff.jam_kerja = staff.kategori;
-            }
-            return staff;
-          });
-          
-          // Cari data staff yang sesuai dengan user login (case-insensitive)
-          if (currentUser) {
-            const usernameLower = String(currentUser.username).toLowerCase();
-            // Cari berdasarkan id (username) dengan case-insensitive
-            currentStaff = staffData.find(s => String(s.id).toLowerCase() === usernameLower);
-            
-            // Fallback: cari berdasarkan nama (case-insensitive) jika tidak ditemukan
-            if (!currentStaff) {
-              currentStaff = staffData.find(s => s.nama.toLowerCase() === currentUser.nama.toLowerCase());
-            }
-          }
-          
-          updateUI();
-          setLiveStatus('connected');
-        } else {
-          throw new Error(result.message);
-        }
-      } catch (err) {
-        console.error("Sync Error:", err);
-        setLiveStatus('disconnected');
-        showToast('Gagal memuat data: ' + err.message, 'error');
-      }
-      setTimeout(startSync, 4000);
+    function renderList(container, list){
+      if(!list.length){ container.innerHTML = '<div class="empty">Tidak ada data</div>'; return; }
+      container.innerHTML = list.map(item => rowHtml(item)).join('');
     }
 
-    function updateUI() {
-      updateStats();
-      updateUserInfo();
-      const searchVal = elements.staffSearch ? elements.staffSearch.value : '';
-      renderTable(searchVal);
-    }
-
-    function updateStats() {
-      // Hanya hitung staff yang tidak cuti (aktif)
-      const activeStaff = staffData.filter(s => !s.cuti);
-      const total = activeStaff.length;
-      const present = activeStaff.filter(s => s.status === 'Sudah Absen').length;
-      elements.totalStaff.innerText = total;
-      elements.presentCount.innerText = present;
-      elements.absentCount.innerText = total - present;
-    }
-
-    function updateUserInfo() {
-      if (currentStaff) {
-        const initial = currentStaff.nama.substring(0, 2).toUpperCase();
-        const isHadir = currentStaff.status === 'Sudah Absen';
-        const isCuti = currentStaff.cuti;
-        const offLabel = currentStaff.kategori || currentStaff.kategori_jadwal || currentStaff.status || currentStaff.shift || currentStaff.jam_kerja || 'OFFDAY';
-        let statusText = isHadir ? 'Sudah Absen' : (isCuti ? offLabel : 'Belum Absen');
-        const waktu = isHadir ? formatWaktu(currentStaff.waktu) : '-';
-        
-        elements.userInfoContainer.innerHTML = `
-          <div class="user-avatar">${initial}</div>
-          <div class="user-detail">
-            <h3>${currentStaff.nama}</h3>
-            <p>${currentStaff.jabatan || 'Staff'} · ${isCuti ? 'Jadwal ' + String(offLabel).toUpperCase() : 'Jam kerja ' + currentStaff.jam_kerja} · ${statusText} ${waktu !== '-' ? 'jam ' + waktu : ''}</p>
+    function rowHtml(item){
+      const checked = item.status_checkin === 'Sudah Checkin';
+      const late = checked && String(item.keterangan || '').toLowerCase().includes('terlambat');
+      const cls = checked ? (late ? 'checked late' : 'checked on-time') : '';
+      const note = checked ? (late ? `<div class="smallNote"><i class="fas fa-triangle-exclamation"></i> Telat ${escapeHtml(item.telat || '')}</div>` : `<div class="smallNote"><i class="fas fa-check-circle"></i> Tepat waktu</div>`) : '';
+      const action = checked ? `<div class="stateTag ${late ? 'late':'ok'}"><i class="fas ${late ? 'fa-triangle-exclamation':'fa-check'}"></i>${late ? 'TELAT':'SUDAH'}</div><div class="timeText">${escapeHtml(item.waktu_checkin || '-')}</div><button class="btnReset" data-id="${escapeAttr(item.id)}" data-name="${escapeAttr(item.nama)}"><i class="fas fa-rotate-left"></i> RESET</button>` : `<button class="btnCheck" data-id="${escapeAttr(item.id)}"><i class="fas fa-location-dot"></i> CHECKIN</button>`;
+      return `
+        <article class="person ${cls}">
+          <div class="avatar">${initials(item.nama)}</div>
+          <div class="info">
+            <h4 title="${escapeAttr(item.nama)}">${escapeHtml(item.nama)}</h4>
+            <p><span>${escapeHtml(item.jabatan || 'Staff')}</span><span>·</span><span>${escapeHtml(item.jam_kerja || '-')}</span></p>
+            ${note}
           </div>
-        `;
-        
-        // Disable tombol jika sudah hadir atau sedang cuti
-        elements.submitBtn.disabled = isHadir || isCuti;
-        if (isCuti) {
-          elements.submitBtn.innerHTML = `<i class="fas fa-ban"></i> ${String(offLabel).toUpperCase()}`;
-        } else if (isHadir) {
-          elements.submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> SUDAH ABSEN';
-        } else {
-          elements.submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> ABSEN';
-        }
-      } else {
-        // Jika currentStaff tidak ditemukan, tampilkan skeleton loading
-        showSkeletonUserInfo();
-        elements.submitBtn.disabled = true;
-        elements.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> LOADING...';
-      }
+          <div class="act">${action}</div>
+        </article>`;
     }
 
-    // Fungsi konversi waktu "HH:MM:SS" ke detik
-    function timeToSeconds(timeStr) {
-      if (!timeStr) return 0;
-      const m = String(timeStr).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
-      if (!m) return 0;
-      return (+m[1]) * 3600 + (+m[2]) * 60 + (+(m[3] || 0));
+    function renderPassport(list){
+      const safeList = Array.isArray(list) ? list : [];
+      const pagi = safeList
+        .filter(x => normalizeShiftName(x.shift) === 'pagi')
+        .sort((a,b) => String(a.nama || '').localeCompare(String(b.nama || '')));
+      const malam = safeList
+        .filter(x => normalizeShiftName(x.shift) === 'malam')
+        .sort((a,b) => String(a.nama || '').localeCompare(String(b.nama || '')));
+
+      renderPassportList(els.passportPagiList, pagi, 'Tidak ada staff Shift Pagi pada jadwal hari ini');
+      renderPassportList(els.passportMalamList, malam, 'Tidak ada staff Shift Malam pada jadwal hari ini');
     }
 
-    function menitTelatText(jamKerja, pembandingWaktu) {
-      const jk = timeToSeconds(jamKerja);
-      const now = timeToSeconds(pembandingWaktu || currentTimeStr);
-      const diff = Math.max(0, Math.floor((now - jk) / 60));
-      if (diff <= 0) return '';
-      return diff + ' menit';
-    }
-
-    function renderTable(filter = "") {
-      const tbody = elements.attendanceBody;
-      let data = [...staffData];
-
-      if (filter) {
-        data = data.filter(s => String(s.nama || '').toLowerCase().includes(filter.toLowerCase()));
-      }
-
-      if (data.length === 0) {
-        tbody.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);opacity:0.5">Tidak ada data</div>';
+    function renderPassportList(container, list, emptyText){
+      if(!container) return;
+      if(!list.length){
+        container.innerHTML = `<div class="passportEmpty">${escapeHtml(emptyText || 'Tidak ada data')}</div>`;
         return;
       }
+      container.innerHTML = list.map(item => passportRowHtml(item)).join('');
+    }
 
-      const nowSec = timeToSeconds(currentTimeStr);
-      const TOLERANSI = 15 * 60;
+    function passportRowHtml(item){
+      const key = passportKey(item);
+      const done = !!passportState[key];
+      const shift = String(item.shift || '-').toUpperCase();
+      return `
+        <label class="passportItem ${done ? 'done' : ''}">
+          <span class="passportIcon">${initials(item.nama)}</span>
+          <span class="passportInfo">
+            <b title="${escapeAttr(item.nama)}">${escapeHtml(item.nama)}</b>
+            <small>${escapeHtml(shift)} · ${escapeHtml(item.jabatan || 'Staff')}</small>
+          </span>
+          <input class="passportCheck" type="checkbox" data-key="${escapeAttr(key)}" ${done ? 'checked' : ''}>
+          <span class="passportBox"><i class="fas fa-check"></i></span>
+        </label>`;
+    }
 
-      const upcoming = [];
-      const past = [];
-      const offList = [];
+    function updatePassportStats(activeList){
+      const active = Array.isArray(activeList) ? activeList : allData.filter(x => !x.off);
+      const pagi = active.filter(x => normalizeShiftName(x.shift) === 'pagi');
+      const malam = active.filter(x => normalizeShiftName(x.shift) === 'malam');
+      const donePagi = pagi.filter(x => passportState[passportKey(x)]).length;
+      const doneMalam = malam.filter(x => passportState[passportKey(x)]).length;
+      const pendingPagi = Math.max(0, pagi.length - donePagi);
+      const pendingMalam = Math.max(0, malam.length - doneMalam);
 
-      data.forEach(staff => {
-        if (staff.cuti) {
-          offList.push(staff);
-          return;
+      if(els.passportDonePagi) els.passportDonePagi.textContent = donePagi;
+      if(els.passportPendingPagi) els.passportPendingPagi.textContent = pendingPagi;
+      if(els.passportDoneMalam) els.passportDoneMalam.textContent = doneMalam;
+      if(els.passportPendingMalam) els.passportPendingMalam.textContent = pendingMalam;
+      if(els.passportTotalPagi) els.passportTotalPagi.textContent = pagi.length + ' Staff';
+      if(els.passportTotalMalam) els.passportTotalMalam.textContent = malam.length + ' Staff';
+    }
+
+    function updateTabBadges(activeList, checkinPendingList){
+      const active = Array.isArray(activeList) ? activeList : allData.filter(x => !x.off);
+      const checkinPending = Array.isArray(checkinPendingList) ? checkinPendingList.length : active.filter(x => x.status_checkin !== 'Sudah Checkin').length;
+      const passportDone = active.filter(x => passportState[passportKey(x)]).length;
+      if(els.tabCheckinBadge) els.tabCheckinBadge.textContent = checkinPending;
+      if(els.tabPassportBadge) els.tabPassportBadge.textContent = passportDone;
+    }
+
+    function switchTab(tab){
+      activeTab = tab === 'passport' ? 'passport' : 'checkin';
+      const isPassport = activeTab === 'passport';
+      if(els.tabCheckinBtn) els.tabCheckinBtn.classList.toggle('active', !isPassport);
+      if(els.tabPassportBtn) els.tabPassportBtn.classList.toggle('active', isPassport);
+      if(els.checkinPage) els.checkinPage.classList.toggle('active', !isPassport);
+      if(els.passportPage) els.passportPage.classList.toggle('active', isPassport);
+      if(els.resetAllBtn) els.resetAllBtn.style.display = isPassport ? 'none' : '';
+      if(els.mainTitle) els.mainTitle.textContent = isPassport ? 'KUMPUL PASPOR' : 'CHECKIN KANTOR';
+      if(els.subTitle) els.subTitle.textContent = isPassport ? 'LINE TOGEL · Passport Collection Board' : 'LINE TOGEL · Arrival Board Staff';
+      if(els.emblemIcon) els.emblemIcon.className = isPassport ? 'fas fa-passport' : 'fas fa-location-crosshairs';
+      renderAll();
+    }
+
+    async function loadPassportState(silent=true){
+      if(passportLoading) return;
+      passportLoading = true;
+      try{
+        const result = await api('loadPaspor');
+        if(!result.success) throw new Error(result.message || 'Gagal load data paspor');
+
+        const nextState = {};
+        (Array.isArray(result.data) ? result.data : []).forEach(item => {
+          const done = item.sudah_paspor || item.passport_done || String(item.status_paspor || item.status_passport || '').toLowerCase().includes('sudah');
+          if(done) nextState[passportKey(item)] = true;
+        });
+
+        passportState = nextState;
+        if(result.tanggalKey) currentDateKey = makePassportDateKey(result.tanggalKey);
+        renderAll();
+      }catch(err){
+        if(!silent) showToast('Gagal memuat data paspor: ' + err.message, 'error');
+      }finally{
+        passportLoading = false;
+      }
+    }
+
+    function passportKey(item){
+      if(typeof item === 'string') return normalizeKey(item);
+      return normalizeKey(item.id || item.username || item.nama);
+    }
+
+    function makePassportDateKey(value){
+      return normalizeKey(value || currentWibDateKey()) || currentWibDateKey();
+    }
+
+    function currentWibDateKey(){
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+      }).formatToParts(new Date());
+      const get = type => (parts.find(p => p.type === type) || {}).value || '00';
+      return `${get('year')}${get('month')}${get('day')}`;
+    }
+
+    async function togglePassport(key, checked){
+      if(!key) return;
+      if(pendingPassports.has(key)) return;
+
+      const oldValue = !!passportState[key];
+      pendingPassports.add(key);
+
+      if(checked) passportState[key] = true;
+      else delete passportState[key];
+
+      renderAll();
+
+      try{
+        const result = await api('togglePaspor','POST',{ id:key, checked:!!checked });
+        if(!result.success) throw new Error(result.message || 'Gagal menyimpan paspor');
+
+        if(result.checked) passportState[key] = true;
+        else delete passportState[key];
+
+        renderAll();
+      }catch(err){
+        if(oldValue) passportState[key] = true;
+        else delete passportState[key];
+
+        renderAll();
+        showToast(err.message,'error');
+      }finally{
+        pendingPassports.delete(key);
+        setTimeout(() => loadPassportState(true), 350);
+      }
+    }
+
+    async function resetPassportToday(){
+      const activeCount = allData.filter(x => !x.off).length;
+      if(activeCount <= 0){ showToast('Belum ada data staff aktif untuk paspor','warning'); return; }
+      if(!confirm('Reset semua ceklis Kumpul Paspor hari ini?')) return;
+
+      const oldState = Object.assign({}, passportState);
+      passportState = {};
+      renderAll();
+
+      if(els.resetPassportBtn){
+        els.resetPassportBtn.disabled = true;
+        els.resetPassportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reset...';
+      }
+
+      try{
+        const result = await api('resetPaspor','POST',{});
+        if(!result.success) throw new Error(result.message || 'Gagal reset paspor');
+
+        passportState = {};
+        renderAll();
+        showToast(result.message || 'Ceklis paspor hari ini berhasil direset','success');
+        setTimeout(() => loadPassportState(true), 350);
+      }catch(err){
+        passportState = oldState;
+        renderAll();
+        showToast(err.message,'error');
+      }finally{
+        if(els.resetPassportBtn){
+          els.resetPassportBtn.disabled = false;
+          els.resetPassportBtn.innerHTML = '<i class="fas fa-rotate-left"></i> Reset Paspor';
         }
+      }
+    }
 
-        const staffJamSec = timeToSeconds(staff.jam_kerja);
-        // Yang sudah lewat jam kerja langsung dipindah ke bawah.
-        if (staffJamSec > nowSec) upcoming.push(staff);
-        else past.push(staff);
+    function renderOff(list){
+      if(!list.length){ els.offList.innerHTML = '<div class="empty">Tidak ada OFFDAY / CUTI</div>'; return; }
+      els.offList.innerHTML = list.map(item => {
+        const status = String(item.kategori || item.shift || '').toUpperCase();
+        const isCuti = status.includes('CUTI');
+        return `<article class="offItem ${isCuti ? 'cuti':'offday'}"><div class="avatar">${initials(item.nama)}</div><div><h4 title="${escapeAttr(item.nama)}">${escapeHtml(item.nama)}</h4><p>${escapeHtml(item.jabatan || 'Staff')}</p></div><div class="offBadge">${escapeHtml(status || '-')}</div></article>`;
+      }).join('');
+    }
+
+    async function doCheckin(id, button){
+      if(!id || isResetAllBusy) return;
+      const key = normalizeKey(id);
+      if(pendingCheckins.has(key)) return;
+
+      const target = findLocalItem(id);
+      if(!target || target.off || target.status_checkin === 'Sudah Checkin') return;
+
+      // Optimistic update: begitu tombol diklik, kartu langsung berubah.
+      // Request backend tetap berjalan di belakang, jadi bisa klik banyak staff berurutan tanpa menunggu loading.
+      const snapshot = cloneItem(target);
+      pendingCheckins.add(key);
+      applyOptimisticCheckin(target);
+      dataSignature = '';
+      renderAll();
+
+      api('checkin','POST',{ id })
+        .then(result => {
+          if(!result.success) throw new Error(result.message || 'Gagal checkin');
+          updateLocalCheckin(id, result);
+          dataSignature = '';
+          renderAll();
+        })
+        .catch(err => {
+          restoreLocalItem(id, snapshot);
+          dataSignature = '';
+          renderAll();
+          showToast(err.message,'error');
+        })
+        .finally(() => {
+          pendingCheckins.delete(key);
+          setTimeout(() => loadData(true, true), 350);
+        });
+    }
+
+
+    async function doResetCheckin(id, button){
+      if(!id || isResetAllBusy) return;
+      const key = normalizeKey(id);
+      if(pendingResets.has(key)) return;
+
+      const name = button ? (button.dataset.name || id) : id;
+      if(!confirm('Kembalikan checkin ' + name + ' menjadi Belum Checkin?')) return;
+
+      const target = findLocalItem(id);
+      if(!target) return;
+      const snapshot = cloneItem(target);
+
+      pendingResets.add(key);
+      updateLocalReset(id, {});
+      dataSignature = '';
+      renderAll();
+
+      api('resetOneCheckin','POST',{ id })
+        .then(result => {
+          if(!result.success) throw new Error(result.message || 'Gagal reset checkin');
+          updateLocalReset(id, result);
+          dataSignature = '';
+          renderAll();
+        })
+        .catch(err => {
+          restoreLocalItem(id, snapshot);
+          dataSignature = '';
+          renderAll();
+          showToast(err.message,'error');
+        })
+        .finally(() => {
+          pendingResets.delete(key);
+          setTimeout(() => loadData(true, true), 350);
+        });
+    }
+
+
+    async function doResetAllCheckin(){
+      if(isResetAllBusy) return;
+      const checkedCount = allData.filter(x => !x.off && x.status_checkin === 'Sudah Checkin').length;
+      if(checkedCount <= 0){ showToast('Belum ada staff yang sudah checkin untuk direset','warning'); return; }
+      if(!confirm('RESET ALL akan mengembalikan ' + checkedCount + ' staff yang sudah checkin menjadi Belum Checkin. Lanjutkan?')) return;
+
+      isResetAllBusy = true;
+      const oldText = els.resetAllBtn ? els.resetAllBtn.innerHTML : '';
+      if(els.resetAllBtn){ els.resetAllBtn.disabled = true; els.resetAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reset...'; }
+      try{
+        const result = await api('resetAllCheckin','POST',{});
+        if(!result.success) throw new Error(result.message || 'Gagal reset all checkin');
+        allData.forEach(item => {
+          if(!item.off && item.status_checkin === 'Sudah Checkin'){
+            item.status_checkin = 'Belum Checkin';
+            item.waktu_checkin = '-';
+            item.keterangan = 'Belum Checkin';
+            item.telat = '';
+            item.timestamp = '';
+          }
+        });
+        dataSignature = '';
+        renderAll();
+        showToast(result.message || 'Reset All berhasil','success');
+        setTimeout(() => loadData(true, true), 350);
+      }catch(err){
+        showToast(err.message,'error');
+      }finally{
+        isResetAllBusy = false;
+        if(els.resetAllBtn){ els.resetAllBtn.disabled = false; els.resetAllBtn.innerHTML = oldText; }
+      }
+    }
+
+
+    function findLocalItem(id){
+      const key = normalizeKey(id);
+      return allData.find(x => normalizeKey(x.id) === key || normalizeKey(x.username) === key || normalizeKey(x.nama) === key);
+    }
+
+    function cloneItem(item){
+      return JSON.parse(JSON.stringify(item || {}));
+    }
+
+    function restoreLocalItem(id, snapshot){
+      const target = findLocalItem(id);
+      if(!target || !snapshot) return;
+      Object.assign(target, snapshot);
+    }
+
+    function applyOptimisticCheckin(item){
+      const waktu = currentWibTime();
+      const jamKerja = normalizeTimeString(item.jam_kerja || '00:00:00');
+      const diff = timeToSeconds(waktu) - timeToSeconds(jamKerja);
+      const late = diff > 0;
+      item.status_checkin = 'Sudah Checkin';
+      item.waktu_checkin = waktu;
+      item.keterangan = late ? 'Terlambat' : 'Tepat Waktu';
+      item.telat = late ? formatLateDuration(diff) : '';
+      item.timestamp = (item.tanggal || '') + ' ' + waktu;
+    }
+
+    function currentWibTime(){
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Jakarta', hour12: false,
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).formatToParts(new Date());
+      const get = type => (parts.find(p => p.type === type) || {}).value || '00';
+      return `${get('hour')}:${get('minute')}:${get('second')}`;
+    }
+
+    function normalizeTimeString(value){
+      const m = String(value || '').match(/(\d{1,2})[:.](\d{2})(?::(\d{2}))?/);
+      if(!m) return '00:00:00';
+      return `${String(m[1]).padStart(2,'0')}:${m[2]}:${m[3] || '00'}`;
+    }
+
+    function timeToSeconds(timeStr){
+      const p = normalizeTimeString(timeStr).split(':').map(Number);
+      return (p[0] || 0) * 3600 + (p[1] || 0) * 60 + (p[2] || 0);
+    }
+
+    function formatLateDuration(seconds){
+      seconds = Math.max(0, Number(seconds) || 0);
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      if(h > 0 && m > 0) return h + ' jam ' + m + ' menit';
+      if(h > 0) return h + ' jam';
+      return Math.max(1, m) + ' menit';
+    }
+
+    function updateLocalCheckin(id, result){
+      const key = normalizeKey(id);
+      const target = allData.find(x => normalizeKey(x.id) === key || normalizeKey(x.username) === key || normalizeKey(x.nama) === key);
+      if(!target) return;
+      target.status_checkin = 'Sudah Checkin';
+      target.waktu_checkin = result.waktu || target.waktu_checkin || '-';
+      target.keterangan = result.keterangan || target.keterangan || 'Tepat Waktu';
+      target.telat = result.telat || target.telat || '';
+      target.timestamp = result.timestamp || target.timestamp || '';
+    }
+
+
+    function updateLocalReset(id, result){
+      const key = normalizeKey(id);
+      const target = allData.find(x => normalizeKey(x.id) === key || normalizeKey(x.username) === key || normalizeKey(x.nama) === key);
+      if(!target) return;
+      target.status_checkin = 'Belum Checkin';
+      target.waktu_checkin = '-';
+      target.keterangan = 'Belum Checkin';
+      target.telat = '';
+      target.timestamp = '';
+    }
+
+    function showToast(msg,type){
+      els.toast.textContent = msg;
+      els.toast.className = 'toast show ' + (type || '');
+      setTimeout(() => els.toast.classList.remove('show'), 2800);
+    }
+
+    function normalizeShiftName(value){
+      const s = String(value || '').toLowerCase().trim();
+      if(s.includes('pagi')) return 'pagi';
+      if(s.includes('malam')) return 'malam';
+      return s;
+    }
+
+    function initials(name){ return String(name || '?').trim().split(/\s+/).slice(0,2).map(x => x[0] || '').join('').toUpperCase() || '?'; }
+    function escapeHtml(s){ return String(s ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+    function escapeAttr(s){ return escapeHtml(s).replace(/`/g,'&#96;'); }
+    function normalizeKey(value){ return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+
+    els.pagiList.addEventListener('click', (e) => { const resetBtn = e.target.closest('.btnReset'); if(resetBtn) return doResetCheckin(resetBtn.dataset.id, resetBtn); const btn = e.target.closest('.btnCheck'); if(btn) doCheckin(btn.dataset.id, btn); });
+    els.malamList.addEventListener('click', (e) => { const resetBtn = e.target.closest('.btnReset'); if(resetBtn) return doResetCheckin(resetBtn.dataset.id, resetBtn); const btn = e.target.closest('.btnCheck'); if(btn) doCheckin(btn.dataset.id, btn); });
+    els.searchInput.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(renderAll, 100); });
+    if(els.passportSearchInput) els.passportSearchInput.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(renderAll, 100); });
+    if(els.tabCheckinBtn) els.tabCheckinBtn.addEventListener('click', () => switchTab('checkin'));
+    if(els.tabPassportBtn) els.tabPassportBtn.addEventListener('click', () => switchTab('passport'));
+    els.refreshBtn.addEventListener('click', () => loadData(false));
+    els.resetAllBtn.addEventListener('click', doResetAllCheckin);
+    function bindPassportChecklist(container){
+      if(!container) return;
+      container.addEventListener('change', (e) => {
+        const box = e.target.closest('.passportCheck');
+        if(box) togglePassport(box.dataset.key, box.checked);
       });
-
-      upcoming.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      past.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      offList.sort((a, b) => String(a.kategori || a.status || '').localeCompare(String(b.kategori || b.status || '')) || String(a.nama).localeCompare(String(b.nama)));
-
-      const activeList = upcoming.concat(past);
-
-      const renderStaffRow = (staff) => {
-        const isHadir = staff.status === 'Sudah Absen';
-        const isOff = staff.cuti === true;
-        const offLabel = String(staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || 'OFFDAY').toUpperCase();
-        const time = formatWaktu(staff.waktu);
-        const initial = String(staff.nama || '?').substring(0, 2).toUpperCase();
-        const rowClass = isOff ? `off-row ${offLabel.includes('CUTI') ? 'cuti-row' : 'offday-row'}` : (isHadir ? 'is-hadir' : 'is-belum');
-        const chipClass = offLabel.includes('CUTI') ? 'cuti' : (isOff ? 'offday' : '');
-
-        let statusText = 'MENUNGGU';
-        let statusClass = '';
-        let blinkClass = '';
-        let noteText = '';
-        let terlambatRowClass = '';
-
-        if (isOff) {
-          statusText = offLabel;
-          statusClass = offLabel.includes('CUTI') ? 'status-bisa' : 'status-terlambat';
-          noteText = 'Tidak perlu absen';
-        } else if (!isHadir && staff.jam_kerja) {
-          const jamKerjaSec = timeToSeconds(staff.jam_kerja);
-          const batasAwalSec = jamKerjaSec - 15 * 60;
-
-          if (nowSec >= jamKerjaSec) {
-            const telat = menitTelatText(staff.jam_kerja);
-            statusText = 'TERLAMBAT';
-            statusClass = 'status-terlambat';
-            terlambatRowClass = 'terlambat-row';
-            noteText = telat ? `❗ Terlambat ${telat}` : '❗ Terlambat';
-          } else if (nowSec >= batasAwalSec && nowSec < jamKerjaSec) {
-            statusText = 'BISA ABSEN';
-            statusClass = 'status-bisa';
-            blinkClass = 'blink-warning';
-            noteText = '⚠️ tolong bangunkan anak ini';
-          } else {
-            statusText = 'MENUNGGU';
-          }
-        } else if (isHadir) {
-          statusText = 'SUDAH ABSEN';
-          const waktuAbsenSec = timeToSeconds(time);
-          const jamKerjaSec = timeToSeconds(staff.jam_kerja);
-          if (waktuAbsenSec && jamKerjaSec && waktuAbsenSec > jamKerjaSec) {
-            noteText = `❗ Telat ${menitTelatText(staff.jam_kerja, time)}`;
-          } else if (waktuAbsenSec) {
-            noteText = '✅ Tepat waktu';
-          }
-        }
-
-        const timeText = isHadir && time !== '-' ? time : '-';
-        const kategoriChip = isOff ? `<span class="kategori-chip ${chipClass}">${offLabel}</span>` : '';
-        const jadwalText = isOff ? `${staff.jabatan || 'Staff'} · ${offLabel}` : `${staff.jabatan || 'Staff'} · ${staff.jam_kerja}`;
-
-        return `
-          <div class="staff-row ${rowClass} ${blinkClass} ${terlambatRowClass}" title="${noteText}">
-            <div class="user-info-small">
-              <div class="avatar-small">${initial}</div>
-              <div class="user-detail-small">
-                <h4>${staff.nama} ${kategoriChip} ${noteText && !isOff ? `<span class="warning-note"><i class="fas fa-exclamation-triangle"></i></span>` : ''}</h4>
-                <span>${jadwalText}</span>
-                ${noteText ? `<div class="note">${noteText}</div>` : ''}
-              </div>
-            </div>
-            <div style="text-align:right">
-              <div class="status-badge ${statusClass}">${statusText}</div>
-              <div class="time-display">${timeText}</div>
-            </div>
-          </div>
-        `;
-      };
-
-      let html = '';
-      html += `<div class="section-divider"><span><i class="fas fa-user-check"></i> Jadwal Aktif</span><span>${activeList.length} Staff</span></div>`;
-      html += activeList.length ? activeList.map(renderStaffRow).join('') : '<div style="text-align:center;padding:20px;color:var(--text-muted);opacity:0.5">Tidak ada jadwal aktif</div>';
-
-      html += `<div class="section-divider off-section"><span><i class="fas fa-calendar-xmark"></i> OFFDAY / CUTI</span><span>${offList.length} Staff</span></div>`;
-      html += offList.length ? offList.map(renderStaffRow).join('') : '<div style="text-align:center;padding:16px;color:var(--text-muted);opacity:0.45">Tidak ada OFFDAY / CUTI</div>';
-
-      tbody.innerHTML = html;
     }
+    bindPassportChecklist(els.passportPagiList);
+    bindPassportChecklist(els.passportMalamList);
+    if(els.resetPassportBtn) els.resetPassportBtn.addEventListener('click', resetPassportToday);
 
-    function filterTable() {
-      const val = elements.staffSearch.value;
-      renderTable(val);
-    }
-
-    async function handleMarkAttendance() {
-      if (isProcessing) return;
-      if (!currentStaff) {
-        showToast('Data staff tidak ditemukan', 'error');
-        return;
-      }
-      if (currentStaff.cuti) {
-        showToast('Jadwal Anda OFFDAY / CUTI, tidak dapat absen', 'warning');
-        return;
-      }
-      if (currentStaff.status === 'Sudah Absen') {
-        showToast('Anda sudah absen hari ini', 'warning');
-        return;
-      }
-
-      isProcessing = true;
-      const btn = elements.submitBtn;
-      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Proses...';
-
-      try {
-        const result = await apiRequest('absen', 'POST', { id: currentStaff.id });
-        if (result.success) {
-          showToast('Berhasil Absen', 'success');
-          // Update data staff
-          currentStaff.status = 'Sudah Absen';
-          currentStaff.waktu = result.waktu;
-          // Update juga di staffData
-          const index = staffData.findIndex(s => s.id === currentStaff.id);
-          if (index !== -1) {
-            staffData[index].status = 'Sudah Absen';
-            staffData[index].waktu = result.waktu;
-          }
-          updateUI();
-        } else {
-          showToast(result.message || 'Gagal', 'error');
-        }
-      } catch (err) {
-        showToast(err.message, 'error');
-      } finally {
-        isProcessing = false;
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check-circle"></i> ABSEN';
-        // Jika sudah absen, button akan didisable oleh updateUserInfo
-        updateUserInfo();
-      }
-    }
-
-    function showToast(msg, type) {
-      const t = elements.toast;
-      t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`;
-      t.className = `toast show ${type}`;
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // Event listener untuk Enter di form login
-    document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        handleLogin();
-      }
-    });
-    document.getElementById('loginUsername').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        document.getElementById('loginPassword').focus();
-      }
-    });
+    // Real-time polling: Apps Script tidak punya push/socket, jadi dashboard dibuat polling ringan.
+    // Setiap 5 detik dashboard cek perubahan dari DATA CHECKIN HARIAN dan DATA PASPOR HARIAN.
+    loadData(false, true);
+    setInterval(() => loadData(true), REALTIME_REFRESH_MS);
+    document.addEventListener('visibilitychange', () => { if(!document.hidden) loadData(true, true); });
+    window.addEventListener('focus', () => loadData(true, true));
+    window.addEventListener('online', () => loadData(true, true));
   </script>
 </body>
 </html>
