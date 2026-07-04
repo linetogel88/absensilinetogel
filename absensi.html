@@ -359,6 +359,71 @@
       border-color: var(--danger);
     }
 
+    .staff-row.off-row {
+      background: rgba(120, 120, 120, 0.16);
+      border-color: rgba(255, 255, 255, 0.10);
+      opacity: 0.78;
+    }
+    .staff-row.off-row .status-badge {
+      background: rgba(255, 118, 117, 0.85);
+      color: white;
+    }
+
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 14px 2px 6px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .section-divider.off-section {
+      background: rgba(253, 203, 110, 0.10);
+      border-color: rgba(253, 203, 110, 0.22);
+      color: var(--warning);
+    }
+    .kategori-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 7px;
+      margin-left: 6px;
+      border-radius: 999px;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      vertical-align: middle;
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .kategori-chip.offday {
+      background: rgba(142, 124, 195, 0.35);
+      color: #dcd5ff;
+      border-color: rgba(142, 124, 195, 0.55);
+    }
+    .kategori-chip.cuti {
+      background: rgba(253, 203, 110, 0.22);
+      color: var(--warning);
+      border-color: rgba(253, 203, 110, 0.45);
+    }
+    .staff-row.off-row.cuti-row {
+      background: rgba(253, 203, 110, 0.09);
+      border-color: rgba(253, 203, 110, 0.18);
+    }
+    .staff-row.off-row.offday-row {
+      background: rgba(142, 124, 195, 0.12);
+      border-color: rgba(142, 124, 195, 0.22);
+    }
+
     .user-info-small {
       display: flex; align-items: center; gap: 12px;
     }
@@ -588,7 +653,7 @@
 
   <script>
     // ========== KONFIGURASI ==========
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzXd5pu9E8Ejn4Mo1r6EfG49AdFBcKsmwxcJHEjpylWrWgntckxrQDk7nRo1505-SRK/exec';
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxRNqN3xohIU8l04bFubc_G5Ca4GJCLC0chLHbKz971ut97IxywgcFp7P7ZaC3iBF8Dvw/exec';
 
     let staffData = [];
     let isProcessing = false;
@@ -679,10 +744,14 @@
       `;
     }
 
+    function getWibNow() {
+      return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+    }
+
     function updateClock() {
-      const now = new Date();
+      const now = getWibNow();
       const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-      const dStr = `${days[now.getDay()]}, ${now.toLocaleDateString('id-ID')}`;
+      const dStr = `${days[now.getDay()]}, ${now.toLocaleDateString('id-ID')} WIB`;
       const tStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
       
       // Simpan currentTimeStr untuk perbandingan jam kerja
@@ -697,15 +766,13 @@
     }
 
     function formatWaktu(waktuStr) {
-      if (!waktuStr || waktuStr === '-') return null;
-      if (typeof waktuStr === 'string' && waktuStr.match(/^\d{2}:\d{2}:\d{2}$/)) return waktuStr;
-      try {
-        const dateObj = new Date(waktuStr);
-        if (!isNaN(dateObj.getTime())) {
-          return `${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}:${String(dateObj.getSeconds()).padStart(2, '0')}`;
-        }
-      } catch (e) { return null; }
-      return null;
+      // Jangan convert ke new Date(), karena bisa berubah akibat timezone/browser.
+      // Ambil jam persis dari backend / Google Sheet.
+      const raw = String(waktuStr || '').trim();
+      if (!raw || raw === '-' || raw.toLowerCase() === 'null' || raw.toLowerCase() === 'undefined') return '-';
+      const m = raw.match(/(\d{1,2})[:.](\d{2})(?::(\d{2}))?/);
+      if (!m) return '-';
+      return `${String(m[1]).padStart(2, '0')}:${m[2]}:${m[3] || '00'}`;
     }
 
     function setLiveStatus(status) {
@@ -724,7 +791,7 @@
 
     // ========== API REQUEST DENGAN HANDLING RESPON ==========
     async function apiRequest(action, method = 'GET', body = null) {
-      let url = BACKEND_URL + '?action=' + action;
+      let url = BACKEND_URL + '?action=' + action + '&_=' + Date.now();
       let options = { 
         method: method, 
         mode: 'cors', 
@@ -804,19 +871,27 @@
       try {
         const result = await apiRequest('load');
         if (result.success) {
-          // Filter staff dengan nama tidak kosong, tambah default jam_kerja dan cuti
+          // Filter staff dengan nama tidak kosong, baca OFFDAY/CUTI dari backend
           staffData = result.data.filter(staff => staff.nama && staff.nama.trim() !== "").map(staff => {
-            // Jika tidak ada jam_kerja dari backend, beri default "07:45:00"
-            if (!staff.jam_kerja) staff.jam_kerja = "07:45:00";
-            
-            // CEK JAM KERJA: jika mengandung kata "cuti" (case insensitive), set cuti = true
-            if (staff.jam_kerja && staff.jam_kerja.toLowerCase().includes('cuti')) {
-              staff.cuti = true;
-            } else {
-              // Jika tidak, gunakan field cuti dari backend (jika ada)
-              staff.cuti = staff.cuti === true || staff.cuti === "true" || staff.cuti === "Cuti" ? true : false;
+            const kategoriText = String(staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || staff.jam_kerja || '').toUpperCase();
+            const shiftText = String(staff.shift || staff.status || staff.jam_kerja || '').toUpperCase();
+            const isOff = staff.cuti === true || staff.cuti === 'true' || ['OFF','OFFDAY','OFF DAY','CUTI','LIBUR'].some(x => kategoriText.includes(x) || shiftText.includes(x));
+            staff.cuti = isOff;
+
+            // KUNCI JAM KERJA: jangan ambil jam dari sheet kalau shift aktif.
+            // PAGI wajib 07:45:00, MALAM wajib 19:45:00.
+            if (!staff.cuti) {
+              const sft = String(staff.shift || '').toUpperCase();
+              if (sft.includes('MALAM')) staff.jam_kerja = '19:45:00';
+              else if (sft.includes('PAGI')) staff.jam_kerja = '07:45:00';
+              else if (!staff.jam_kerja) staff.jam_kerja = '07:45:00';
             }
-            
+
+            // Untuk OFFDAY/CUTI, tampilkan labelnya sebagai jam kerja.
+            if (staff.cuti) {
+              staff.kategori = staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || 'OFFDAY';
+              if (!staff.jam_kerja) staff.jam_kerja = staff.kategori;
+            }
             return staff;
           });
           
@@ -867,21 +942,22 @@
         const initial = currentStaff.nama.substring(0, 2).toUpperCase();
         const isHadir = currentStaff.status === 'Sudah Absen';
         const isCuti = currentStaff.cuti;
-        let statusText = isHadir ? 'Sudah Absen' : (isCuti ? 'Cuti' : 'Belum Absen');
+        const offLabel = currentStaff.kategori || currentStaff.kategori_jadwal || currentStaff.status || currentStaff.shift || currentStaff.jam_kerja || 'OFFDAY';
+        let statusText = isHadir ? 'Sudah Absen' : (isCuti ? offLabel : 'Belum Absen');
         const waktu = isHadir ? formatWaktu(currentStaff.waktu) : '-';
         
         elements.userInfoContainer.innerHTML = `
           <div class="user-avatar">${initial}</div>
           <div class="user-detail">
             <h3>${currentStaff.nama}</h3>
-            <p>${currentStaff.jabatan || 'Staff'} · Jam kerja ${currentStaff.jam_kerja} · ${statusText} ${waktu !== '-' ? 'jam ' + waktu : ''}</p>
+            <p>${currentStaff.jabatan || 'Staff'} · ${isCuti ? 'Jadwal ' + String(offLabel).toUpperCase() : 'Jam kerja ' + currentStaff.jam_kerja} · ${statusText} ${waktu !== '-' ? 'jam ' + waktu : ''}</p>
           </div>
         `;
         
         // Disable tombol jika sudah hadir atau sedang cuti
         elements.submitBtn.disabled = isHadir || isCuti;
         if (isCuti) {
-          elements.submitBtn.innerHTML = '<i class="fas fa-ban"></i> CUTI';
+          elements.submitBtn.innerHTML = `<i class="fas fa-ban"></i> ${String(offLabel).toUpperCase()}`;
         } else if (isHadir) {
           elements.submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> SUDAH ABSEN';
         } else {
@@ -898,20 +974,25 @@
     // Fungsi konversi waktu "HH:MM:SS" ke detik
     function timeToSeconds(timeStr) {
       if (!timeStr) return 0;
-      const parts = timeStr.split(':');
-      if (parts.length === 3) {
-        return (+parts[0]) * 3600 + (+parts[1]) * 60 + (+parts[2]);
-      }
-      return 0;
+      const m = String(timeStr).match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+      if (!m) return 0;
+      return (+m[1]) * 3600 + (+m[2]) * 60 + (+(m[3] || 0));
+    }
+
+    function menitTelatText(jamKerja, pembandingWaktu) {
+      const jk = timeToSeconds(jamKerja);
+      const now = timeToSeconds(pembandingWaktu || currentTimeStr);
+      const diff = Math.max(0, Math.floor((now - jk) / 60));
+      if (diff <= 0) return '';
+      return diff + ' menit';
     }
 
     function renderTable(filter = "") {
       const tbody = elements.attendanceBody;
-      // Hanya tampilkan staff yang TIDAK CUTI (aktif) di dashboard
-      let data = staffData.filter(s => !s.cuti);
+      let data = [...staffData];
 
       if (filter) {
-        data = data.filter(s => s.nama.toLowerCase().includes(filter.toLowerCase()));
+        data = data.filter(s => String(s.nama || '').toLowerCase().includes(filter.toLowerCase()));
       }
 
       if (data.length === 0) {
@@ -919,64 +1000,60 @@
         return;
       }
 
-      // ===== FITUR PINTAR DENGAN TOLERANSI 15 MENIT =====
       const nowSec = timeToSeconds(currentTimeStr);
-      const TOLERANSI = 15 * 60; // 15 menit dalam detik
+      const TOLERANSI = 15 * 60;
 
-      const upcoming = [];  // Jam kerja > sekarang atau ≤ sekarang namun masih dalam toleransi 15 menit
-      const past = [];      // Jam kerja ≤ sekarang dan sudah lewat lebih dari toleransi
+      const upcoming = [];
+      const past = [];
+      const offList = [];
 
       data.forEach(staff => {
-        const staffJamSec = timeToSeconds(staff.jam_kerja);
-        if (staffJamSec > nowSec) {
-          // Belum lewat
-          upcoming.push(staff);
-        } else {
-          // Sudah lewat atau tepat waktu
-          const selisih = nowSec - staffJamSec;
-          if (selisih <= TOLERANSI) {
-            // Masih dalam toleransi 15 menit -> anggap masih upcoming (tetap di atas)
-            upcoming.push(staff);
-          } else {
-            // Lewat lebih dari 15 menit -> pindah ke grup past (bawah)
-            past.push(staff);
-          }
+        if (staff.cuti) {
+          offList.push(staff);
+          return;
         }
+
+        const staffJamSec = timeToSeconds(staff.jam_kerja);
+        // Yang sudah lewat jam kerja langsung dipindah ke bawah.
+        if (staffJamSec > nowSec) upcoming.push(staff);
+        else past.push(staff);
       });
 
-      // Urutkan upcoming secara ascending (yang paling cepat duluan)
       upcoming.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      // Urutkan past secara ascending (jam kerja yang lebih awal lebih dulu) – tidak wajib, tapi rapi
       past.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
+      offList.sort((a, b) => String(a.kategori || a.status || '').localeCompare(String(b.kategori || b.status || '')) || String(a.nama).localeCompare(String(b.nama)));
 
-      // Gabungkan: upcoming di atas, past di bawah
-      const sortedData = upcoming.concat(past);
-      // =================================================
+      const activeList = upcoming.concat(past);
 
-      let html = '';
-      sortedData.forEach(staff => {
+      const renderStaffRow = (staff) => {
         const isHadir = staff.status === 'Sudah Absen';
+        const isOff = staff.cuti === true;
+        const offLabel = String(staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || 'OFFDAY').toUpperCase();
         const time = formatWaktu(staff.waktu);
-        const initial = staff.nama.substring(0, 2).toUpperCase();
-        const rowClass = isHadir ? 'is-hadir' : 'is-belum';
-        
-        // Tentukan status teks dan kelas peringatan berdasarkan jam kerja dan waktu sekarang
+        const initial = String(staff.nama || '?').substring(0, 2).toUpperCase();
+        const rowClass = isOff ? `off-row ${offLabel.includes('CUTI') ? 'cuti-row' : 'offday-row'}` : (isHadir ? 'is-hadir' : 'is-belum');
+        const chipClass = offLabel.includes('CUTI') ? 'cuti' : (isOff ? 'offday' : '');
+
         let statusText = 'MENUNGGU';
         let statusClass = '';
         let blinkClass = '';
         let noteText = '';
         let terlambatRowClass = '';
-        
-        if (!isHadir && staff.jam_kerja) {
-          const nowSec = timeToSeconds(currentTimeStr);
+
+        if (isOff) {
+          statusText = offLabel;
+          statusClass = offLabel.includes('CUTI') ? 'status-bisa' : 'status-terlambat';
+          noteText = 'Tidak perlu absen';
+        } else if (!isHadir && staff.jam_kerja) {
           const jamKerjaSec = timeToSeconds(staff.jam_kerja);
-          const batasAwalSec = jamKerjaSec - 15 * 60; // 15 menit sebelum jam kerja
-          
+          const batasAwalSec = jamKerjaSec - 15 * 60;
+
           if (nowSec >= jamKerjaSec) {
+            const telat = menitTelatText(staff.jam_kerja);
             statusText = 'TERLAMBAT';
             statusClass = 'status-terlambat';
             terlambatRowClass = 'terlambat-row';
-            noteText = '❗ Terlambat';
+            noteText = telat ? `❗ Terlambat ${telat}` : '❗ Terlambat';
           } else if (nowSec >= batasAwalSec && nowSec < jamKerjaSec) {
             statusText = 'BISA ABSEN';
             statusClass = 'status-bisa';
@@ -984,22 +1061,29 @@
             noteText = '⚠️ tolong bangunkan anak ini';
           } else {
             statusText = 'MENUNGGU';
-            noteText = '';
           }
         } else if (isHadir) {
-          // Ubah "SUDAH BANGUN" menjadi "SUDAH ABSEN"
           statusText = 'SUDAH ABSEN';
+          const waktuAbsenSec = timeToSeconds(time);
+          const jamKerjaSec = timeToSeconds(staff.jam_kerja);
+          if (waktuAbsenSec && jamKerjaSec && waktuAbsenSec > jamKerjaSec) {
+            noteText = `❗ Telat ${menitTelatText(staff.jam_kerja, time)}`;
+          } else if (waktuAbsenSec) {
+            noteText = '✅ Tepat waktu';
+          }
         }
-        
-        const timeText = isHadir ? time : '-';
 
-        html += `
+        const timeText = isHadir && time !== '-' ? time : '-';
+        const kategoriChip = isOff ? `<span class="kategori-chip ${chipClass}">${offLabel}</span>` : '';
+        const jadwalText = isOff ? `${staff.jabatan || 'Staff'} · ${offLabel}` : `${staff.jabatan || 'Staff'} · ${staff.jam_kerja}`;
+
+        return `
           <div class="staff-row ${rowClass} ${blinkClass} ${terlambatRowClass}" title="${noteText}">
             <div class="user-info-small">
               <div class="avatar-small">${initial}</div>
               <div class="user-detail-small">
-                <h4>${staff.nama} ${noteText ? `<span class="warning-note"><i class="fas fa-exclamation-triangle"></i></span>` : ''}</h4>
-                <span>${staff.jabatan || 'Staff'} · ${staff.jam_kerja}</span>
+                <h4>${staff.nama} ${kategoriChip} ${noteText && !isOff ? `<span class="warning-note"><i class="fas fa-exclamation-triangle"></i></span>` : ''}</h4>
+                <span>${jadwalText}</span>
                 ${noteText ? `<div class="note">${noteText}</div>` : ''}
               </div>
             </div>
@@ -1009,7 +1093,15 @@
             </div>
           </div>
         `;
-      });
+      };
+
+      let html = '';
+      html += `<div class="section-divider"><span><i class="fas fa-user-check"></i> Jadwal Aktif</span><span>${activeList.length} Staff</span></div>`;
+      html += activeList.length ? activeList.map(renderStaffRow).join('') : '<div style="text-align:center;padding:20px;color:var(--text-muted);opacity:0.5">Tidak ada jadwal aktif</div>';
+
+      html += `<div class="section-divider off-section"><span><i class="fas fa-calendar-xmark"></i> OFFDAY / CUTI</span><span>${offList.length} Staff</span></div>`;
+      html += offList.length ? offList.map(renderStaffRow).join('') : '<div style="text-align:center;padding:16px;color:var(--text-muted);opacity:0.45">Tidak ada OFFDAY / CUTI</div>';
+
       tbody.innerHTML = html;
     }
 
@@ -1025,7 +1117,7 @@
         return;
       }
       if (currentStaff.cuti) {
-        showToast('Anda sedang cuti, tidak dapat absen', 'warning');
+        showToast('Jadwal Anda OFFDAY / CUTI, tidak dapat absen', 'warning');
         return;
       }
       if (currentStaff.status === 'Sudah Absen') {
