@@ -1518,6 +1518,185 @@
       }
     }
 
+
+    /* FIX MOBILE BLACK SCREEN: mode scroll ringan untuk HP agar tidak blank/hitam saat scroll cepat */
+    @media (max-width: 900px) {
+      html {
+        background: #070915 !important;
+        overscroll-behavior-y: contain;
+      }
+
+      body {
+        min-height: 100dvh !important;
+        background: #070915 !important;
+        background-image: none !important;
+        overscroll-behavior-y: contain;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body::before,
+      body::after,
+      .bg-orb,
+      .login-card::before,
+      .login-logo::after,
+      .btn-login::before,
+      .btn-submit::before {
+        display: none !important;
+        content: none !important;
+      }
+
+      .login-page,
+      .app-layout,
+      .sidebar,
+      .main-content,
+      .main-content > .card,
+      .card,
+      .staff-list {
+        transform: none !important;
+        -webkit-transform: none !important;
+        perspective: none !important;
+        contain: none !important;
+        will-change: auto !important;
+        backface-visibility: visible !important;
+        -webkit-backface-visibility: visible !important;
+      }
+
+      .mobile-header {
+        position: relative !important;
+        top: auto !important;
+        z-index: 2 !important;
+        background: #0b1020 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+        will-change: auto !important;
+      }
+
+      .card,
+      .login-card,
+      .stat-box,
+      .user-info-card,
+      .staff-row,
+      .section-divider,
+      .live-badge-m,
+      .status-badge,
+      .m-logo,
+      .user-avatar,
+      .avatar-small,
+      .btn-submit,
+      .btn-login,
+      .btn-logout,
+      .form-control,
+      .search-box input,
+      .toast {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+        filter: none !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+        transition: none !important;
+        will-change: auto !important;
+      }
+
+      .card,
+      .login-card {
+        background: #11182d !important;
+        border-color: rgba(255,255,255,0.12) !important;
+      }
+
+      .stat-box,
+      .user-info-card,
+      .form-control,
+      .search-box input,
+      .live-badge-m {
+        background: #151d34 !important;
+      }
+
+      .staff-row {
+        background: #121d34 !important;
+        border-color: rgba(255,255,255,0.10) !important;
+      }
+
+      .staff-row.is-hadir {
+        background: #12342f !important;
+        border-color: rgba(32,227,162,0.30) !important;
+      }
+
+      .staff-row.terlambat-row {
+        background: #321622 !important;
+        border-color: rgba(255,95,122,0.42) !important;
+      }
+
+      .staff-row.blink-warning {
+        animation: none !important;
+        background: #332b18 !important;
+        border-color: rgba(255,209,102,0.58) !important;
+      }
+
+      .staff-row.off-row {
+        background: #181d2e !important;
+        border-color: rgba(255,255,255,0.10) !important;
+      }
+
+      .section-divider {
+        position: relative !important;
+        top: auto !important;
+        z-index: 1 !important;
+        background: #151d34 !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      .section-divider.off-section {
+        background: #211d2a !important;
+      }
+
+      .staff-row.is-hadir .status-badge {
+        background: #20e3a2 !important;
+        color: #03140f !important;
+      }
+
+      .status-badge.status-terlambat {
+        background: #ff5f7a !important;
+        color: #ffffff !important;
+      }
+
+      .status-badge.status-bisa {
+        background: #ffd166 !important;
+        color: #291b00 !important;
+      }
+
+      .staff-list {
+        display: block !important;
+        overflow: visible !important;
+      }
+
+      .staff-list > * + * {
+        margin-top: 9px;
+      }
+
+      body.scrolling-mobile *,
+      body.scrolling-mobile *::before,
+      body.scrolling-mobile *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      body.scrolling-mobile .staff-row,
+      body.scrolling-mobile .card,
+      body.scrolling-mobile .stat-box,
+      body.scrolling-mobile .user-info-card,
+      body.scrolling-mobile .section-divider {
+        box-shadow: none !important;
+        filter: none !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -1680,6 +1859,10 @@
     let lastClockMinute = '';
     let tableRenderFrame = null;
     let searchDebounceTimer = null;
+    let mobileScrollTimer = null;
+    let mobileScrollActive = false;
+    let pendingRenderAfterScroll = false;
+    let pendingRenderForce = false;
     const DEBUG_LOG = false;
 
     // Elemen DOM
@@ -1733,6 +1916,18 @@
 
       updateClock();
       setInterval(updateClock, 1000);
+
+      window.addEventListener('scroll', handleMobileScroll, { passive: true });
+      window.addEventListener('touchmove', handleMobileScroll, { passive: true });
+      window.addEventListener('touchend', finishMobileScrollSoon, { passive: true });
+      window.addEventListener('resize', () => {
+        if (!isMobileView()) {
+          mobileScrollActive = false;
+          pendingRenderAfterScroll = false;
+          pendingRenderForce = false;
+          document.body.classList.remove('scrolling-mobile');
+        }
+      }, { passive: true });
     })();
 
     function stopSync() {
@@ -1774,6 +1969,35 @@
       `;
     }
 
+
+    function isMobileView() {
+      return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+    }
+
+    function handleMobileScroll() {
+      if (!isMobileView()) return;
+      if (!mobileScrollActive) {
+        mobileScrollActive = true;
+        document.body.classList.add('scrolling-mobile');
+      }
+      finishMobileScrollSoon();
+    }
+
+    function finishMobileScrollSoon() {
+      if (!isMobileView()) return;
+      if (mobileScrollTimer) clearTimeout(mobileScrollTimer);
+      mobileScrollTimer = setTimeout(() => {
+        mobileScrollActive = false;
+        document.body.classList.remove('scrolling-mobile');
+        if (pendingRenderAfterScroll) {
+          const force = pendingRenderForce;
+          pendingRenderAfterScroll = false;
+          pendingRenderForce = false;
+          scheduleTableRender(force);
+        }
+      }, 220);
+    }
+
     function getWibNow() {
       return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
     }
@@ -1788,9 +2012,12 @@
       // Simpan currentTimeStr untuk perbandingan jam kerja
       currentTimeStr = tStr;
       
-      if (elements.currentTimeMobile) elements.currentTimeMobile.innerText = tStr;
-      if (elements.currentDateMobile) elements.currentDateMobile.innerText = dStr;
-      if (elements.currentDateDesktop) elements.currentDateDesktop.innerText = dStr;
+      // Saat mobile sedang scroll cepat, jangan repaint header setiap detik agar layar tidak blank/hitam.
+      if (!(isMobileView() && mobileScrollActive)) {
+        if (elements.currentTimeMobile) elements.currentTimeMobile.innerText = tStr;
+        if (elements.currentDateMobile) elements.currentDateMobile.innerText = dStr;
+        if (elements.currentDateDesktop) elements.currentDateDesktop.innerText = dStr;
+      }
 
       // Optimasi mobile: jam tetap jalan tiap detik, tabel cukup dihitung ulang saat menit berganti.
       // Ini menjaga status BISA ABSEN / TERLAMBAT tetap akurat tanpa render ulang berat tiap detik.
@@ -1922,6 +2149,16 @@
 
     function scheduleTableRender(force = false) {
       if (!elements.attendanceBody || elements.mainApp.style.display === 'none') return;
+
+      // Hindari render ulang list saat jari sedang scroll cepat di HP.
+      // Render ditunda sebentar sampai scroll berhenti supaya tidak blank/hitam.
+      if (isMobileView() && mobileScrollActive) {
+        pendingRenderAfterScroll = true;
+        pendingRenderForce = pendingRenderForce || force;
+        if (force) lastRenderKey = '';
+        return;
+      }
+
       if (force) lastRenderKey = '';
       if (tableRenderFrame) return;
 
@@ -2011,6 +2248,12 @@
       updateStats();
       updateUserInfo();
       const searchVal = elements.staffSearch ? elements.staffSearch.value : '';
+      if (isMobileView() && mobileScrollActive) {
+        pendingRenderAfterScroll = true;
+        pendingRenderForce = pendingRenderForce || forceRender;
+        if (forceRender) lastRenderKey = '';
+        return;
+      }
       renderTable(searchVal, forceRender);
     }
 
@@ -2076,6 +2319,12 @@
 
     function renderTable(filter = "", forceRender = false) {
       const tbody = elements.attendanceBody;
+      if (isMobileView() && mobileScrollActive) {
+        pendingRenderAfterScroll = true;
+        pendingRenderForce = pendingRenderForce || forceRender;
+        if (forceRender) lastRenderKey = '';
+        return;
+      }
       const minuteBucket = currentTimeStr.slice(0, 5);
       const renderKey = `${filter}__${minuteBucket}__${lastDataSignature}`;
       if (!forceRender && renderKey === lastRenderKey) return;
