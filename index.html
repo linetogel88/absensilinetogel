@@ -1697,6 +1697,81 @@
       }
     }
 
+
+
+    /* MOBILE SAT-SET FIX: anti blank/hitam saat scroll cepat di HP */
+    @media (max-width: 900px) {
+      html,
+      body {
+        background-color: #070915 !important;
+        background-image: none !important;
+        background-attachment: scroll !important;
+        overscroll-behavior-x: none !important;
+        overscroll-behavior-y: contain !important;
+      }
+
+      *,
+      *::before,
+      *::after {
+        text-shadow: none !important;
+        transform-style: flat !important;
+        -webkit-transform-style: flat !important;
+      }
+
+      .app-layout {
+        background: #070915 !important;
+      }
+
+      .login-page,
+      .app-layout,
+      .sidebar,
+      .main-content,
+      .main-content > .card,
+      .staff-list,
+      .staff-row {
+        overflow-anchor: none !important;
+      }
+
+      .staff-list {
+        display: block !important;
+        transform: translate3d(0,0,0) !important;
+        -webkit-transform: translate3d(0,0,0) !important;
+      }
+
+      .staff-row,
+      .section-divider,
+      .status-badge,
+      .avatar-small,
+      .user-info-small,
+      .user-detail-small {
+        backface-visibility: hidden !important;
+        -webkit-backface-visibility: hidden !important;
+      }
+
+      .skeleton,
+      .skeleton-avatar,
+      .skeleton-line,
+      .loader-circle,
+      .staff-row.blink-warning,
+      .live-dot.connected {
+        animation: none !important;
+      }
+
+      body.scrolling-mobile .mobile-header,
+      body.scrolling-mobile .date-mobile,
+      body.scrolling-mobile .stats-container,
+      body.scrolling-mobile .card,
+      body.scrolling-mobile .staff-list,
+      body.scrolling-mobile .staff-row,
+      body.scrolling-mobile .section-divider {
+        background-attachment: scroll !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+        filter: none !important;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -1918,6 +1993,7 @@
       setInterval(updateClock, 1000);
 
       window.addEventListener('scroll', handleMobileScroll, { passive: true });
+      window.addEventListener('touchstart', handleMobileScroll, { passive: true });
       window.addEventListener('touchmove', handleMobileScroll, { passive: true });
       window.addEventListener('touchend', finishMobileScrollSoon, { passive: true });
       window.addEventListener('resize', () => {
@@ -1995,7 +2071,7 @@
           pendingRenderForce = false;
           scheduleTableRender(force);
         }
-      }, 220);
+      }, 420);
     }
 
     function getWibNow() {
@@ -2247,14 +2323,7 @@
     function updateUI(forceRender = true) {
       updateStats();
       updateUserInfo();
-      const searchVal = elements.staffSearch ? elements.staffSearch.value : '';
-      if (isMobileView() && mobileScrollActive) {
-        pendingRenderAfterScroll = true;
-        pendingRenderForce = pendingRenderForce || forceRender;
-        if (forceRender) lastRenderKey = '';
-        return;
-      }
-      renderTable(searchVal, forceRender);
+      scheduleTableRender(forceRender);
     }
 
     function updateStats() {
