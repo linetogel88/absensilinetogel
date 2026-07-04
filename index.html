@@ -1380,6 +1380,81 @@
       }
     }
 
+
+    /* OPTIMASI MOBILE: tampilan tetap sama, efek berat dikurangi agar scroll tidak ngelag */
+    @media (max-width: 900px) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      body {
+        background:
+          radial-gradient(circle at 18% -8%, rgba(124, 92, 255, 0.18), transparent 34%),
+          radial-gradient(circle at 110% 8%, rgba(24, 226, 210, 0.12), transparent 33%),
+          linear-gradient(145deg, #060714 0%, #0a1022 46%, #070915 100%);
+      }
+
+      body::before,
+      body::after,
+      .bg-orb {
+        display: none !important;
+      }
+
+      .login-card,
+      .mobile-header,
+      .card,
+      .stat-box,
+      .user-info-card,
+      .toast {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      .mobile-header {
+        background: rgba(7, 9, 21, 0.96);
+      }
+
+      .card,
+      .login-card,
+      .staff-row,
+      .stat-box,
+      .user-info-card {
+        box-shadow: 0 8px 18px rgba(0,0,0,0.18) !important;
+      }
+
+      .staff-list {
+        -webkit-overflow-scrolling: touch;
+        contain: content;
+        will-change: scroll-position;
+      }
+
+      .staff-row {
+        contain: layout paint;
+        transition: border-color 0.16s, background-color 0.16s !important;
+      }
+
+      .staff-row:hover {
+        transform: none !important;
+      }
+
+      .btn-login::before,
+      .btn-submit::before,
+      .login-card::before,
+      .login-logo::after {
+        display: none !important;
+      }
+
+      .skeleton,
+      .skeleton-avatar,
+      .skeleton-line {
+        animation-duration: 1.9s !important;
+      }
+
+      .staff-row.blink-warning {
+        animation-duration: 1.4s;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -1535,6 +1610,14 @@
     let currentUser = null; // { username, nama }
     let currentStaff = null; // data staff yang sesuai dengan user login
     let currentTimeStr = "00:00:00"; // untuk menyimpan waktu sekarang format HH:MM:SS
+    let syncTimer = null;
+    let syncInProgress = false;
+    let lastDataSignature = '';
+    let lastRenderKey = '';
+    let lastClockMinute = '';
+    let tableRenderFrame = null;
+    let searchDebounceTimer = null;
+    const DEBUG_LOG = false;
 
     // Elemen DOM
     const elements = {
@@ -1589,7 +1672,16 @@
       setInterval(updateClock, 1000);
     })();
 
+    function stopSync() {
+      if (syncTimer) {
+        clearTimeout(syncTimer);
+        syncTimer = null;
+      }
+      syncInProgress = false;
+    }
+
     function showLogin() {
+      stopSync();
       elements.loading.style.display = 'none';
       elements.loginPage.style.display = 'flex';
       elements.mainApp.style.display = 'none';
@@ -1601,7 +1693,7 @@
       elements.mainApp.style.display = 'grid';
       // Tampilkan skeleton segera
       showSkeletonUserInfo();
-      startSync();
+      if (!syncTimer && !syncInProgress) startSync();
       if (window.innerWidth > 900) {
         elements.desktopDateWrap.style.display = 'block';
       }
@@ -1628,6 +1720,7 @@
       const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
       const dStr = `${days[now.getDay()]}, ${now.toLocaleDateString('id-ID')} WIB`;
       const tStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+      const minuteKey = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       
       // Simpan currentTimeStr untuk perbandingan jam kerja
       currentTimeStr = tStr;
@@ -1636,8 +1729,12 @@
       if (elements.currentDateMobile) elements.currentDateMobile.innerText = dStr;
       if (elements.currentDateDesktop) elements.currentDateDesktop.innerText = dStr;
 
-      // Perbarui tampilan tabel setiap detik agar peringatan waktu real-time
-      filterTable();
+      // Optimasi mobile: jam tetap jalan tiap detik, tabel cukup dihitung ulang saat menit berganti.
+      // Ini menjaga status BISA ABSEN / TERLAMBAT tetap akurat tanpa render ulang berat tiap detik.
+      if (minuteKey !== lastClockMinute) {
+        lastClockMinute = minuteKey;
+        scheduleTableRender(false);
+      }
     }
 
     function formatWaktu(waktuStr) {
@@ -1680,10 +1777,10 @@
       }
 
       try {
-        console.log('Mengirim request ke:', url, options);
+        if (DEBUG_LOG) console.log('Mengirim request ke:', url, options);
         const response = await fetch(url, options);
         const text = await response.text();
-        console.log('Respons mentah:', text);
+        if (DEBUG_LOG) console.log('Respons mentah:', text);
         
         // Coba cek apakah respons dimulai dengan { atau [ (JSON)
         if (text.trim().startsWith('{') || text.trim().startsWith('[')) {
@@ -1717,7 +1814,7 @@
 
       try {
         const result = await apiRequest('login', 'POST', { username, password });
-        console.log('Hasil login:', result);
+        if (DEBUG_LOG) console.log('Hasil login:', result);
         if (result.success) {
           currentUser = result.user;
           sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -1738,16 +1835,54 @@
       sessionStorage.removeItem('currentUser');
       currentUser = null;
       currentStaff = null;
+      staffData = [];
+      lastDataSignature = '';
+      lastRenderKey = '';
+      stopSync();
       showLogin();
+    }
+
+    function makeDataSignature(data) {
+      return data.map(s => [
+        s.id,
+        s.nama,
+        s.jabatan,
+        s.status,
+        s.waktu,
+        s.jam_kerja,
+        s.cuti,
+        s.kategori,
+        s.kategori_jadwal,
+        s.shift
+      ].map(v => String(v ?? '')).join('|')).join('~');
+    }
+
+    function scheduleTableRender(force = false) {
+      if (!elements.attendanceBody || elements.mainApp.style.display === 'none') return;
+      if (force) lastRenderKey = '';
+      if (tableRenderFrame) return;
+
+      tableRenderFrame = requestAnimationFrame(() => {
+        tableRenderFrame = null;
+        const searchVal = elements.staffSearch ? elements.staffSearch.value : '';
+        renderTable(searchVal, force);
+      });
     }
 
     // ========== SINKRONISASI DATA STAFF ==========
     async function startSync() {
+      if (syncInProgress || !currentUser) return;
+      syncInProgress = true;
+      if (syncTimer) {
+        clearTimeout(syncTimer);
+        syncTimer = null;
+      }
+
       try {
         const result = await apiRequest('load');
         if (result.success) {
           // Filter staff dengan nama tidak kosong, baca OFFDAY/CUTI dari backend
-          staffData = result.data.filter(staff => staff.nama && staff.nama.trim() !== "").map(staff => {
+          const normalizedData = result.data.filter(staff => staff.nama && staff.nama.trim() !== "").map(staff => {
             const kategoriText = String(staff.kategori || staff.kategori_jadwal || staff.status || staff.shift || staff.jam_kerja || '').toUpperCase();
             const shiftText = String(staff.shift || staff.status || staff.jam_kerja || '').toUpperCase();
             const isOff = staff.cuti === true || staff.cuti === 'true' || ['OFF','OFFDAY','OFF DAY','CUTI','LIBUR'].some(x => kategoriText.includes(x) || shiftText.includes(x));
@@ -1769,6 +1904,10 @@
             }
             return staff;
           });
+
+          const newSignature = makeDataSignature(normalizedData);
+          const dataChanged = newSignature !== lastDataSignature;
+          staffData = normalizedData;
           
           // Cari data staff yang sesuai dengan user login (case-insensitive)
           if (currentUser) {
@@ -1781,8 +1920,14 @@
               currentStaff = staffData.find(s => s.nama.toLowerCase() === currentUser.nama.toLowerCase());
             }
           }
-          
-          updateUI();
+
+          if (dataChanged) {
+            lastDataSignature = newSignature;
+            updateUI(true);
+          } else {
+            updateStats();
+            updateUserInfo();
+          }
           setLiveStatus('connected');
         } else {
           throw new Error(result.message);
@@ -1791,15 +1936,19 @@
         console.error("Sync Error:", err);
         setLiveStatus('disconnected');
         showToast('Gagal memuat data: ' + err.message, 'error');
+      } finally {
+        syncInProgress = false;
+        if (currentUser) {
+          syncTimer = setTimeout(startSync, 4000);
+        }
       }
-      setTimeout(startSync, 4000);
     }
 
-    function updateUI() {
+    function updateUI(forceRender = true) {
       updateStats();
       updateUserInfo();
       const searchVal = elements.staffSearch ? elements.staffSearch.value : '';
-      renderTable(searchVal);
+      renderTable(searchVal, forceRender);
     }
 
     function updateStats() {
@@ -1862,8 +2011,13 @@
       return diff + ' menit';
     }
 
-    function renderTable(filter = "") {
+    function renderTable(filter = "", forceRender = false) {
       const tbody = elements.attendanceBody;
+      const minuteBucket = currentTimeStr.slice(0, 5);
+      const renderKey = `${filter}__${minuteBucket}__${lastDataSignature}`;
+      if (!forceRender && renderKey === lastRenderKey) return;
+      lastRenderKey = renderKey;
+
       let data = [...staffData];
 
       if (filter) {
@@ -1988,8 +2142,10 @@
     }
 
     function filterTable() {
-      const val = elements.staffSearch.value;
-      renderTable(val);
+      if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        scheduleTableRender(true);
+      }, 120);
     }
 
     async function handleMarkAttendance() {
@@ -2024,7 +2180,8 @@
             staffData[index].status = 'Sudah Absen';
             staffData[index].waktu = result.waktu;
           }
-          updateUI();
+          lastDataSignature = makeDataSignature(staffData);
+          updateUI(true);
         } else {
           showToast(result.message || 'Gagal', 'error');
         }
