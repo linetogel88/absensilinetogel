@@ -1518,92 +1518,6 @@
       }
     }
 
-
-    /* TAMBAHAN FITUR MOBILE COMPACT: 4 statistik, filter cepat, dan update terakhir */
-    .stats-container {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .stat-box.terlambat {
-      border-color: rgba(255, 209, 102, 0.22);
-    }
-
-    .stat-box.terlambat::after {
-      background: radial-gradient(circle, rgba(255,209,102,0.18), transparent 62%);
-    }
-
-    .stat-box.terlambat .stat-num {
-      color: var(--warning);
-      text-shadow: 0 0 18px rgba(255, 209, 102, 0.24);
-    }
-
-    .filter-tabs {
-      display: flex;
-      gap: 8px;
-      margin: -2px 0 12px;
-      padding-bottom: 2px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .filter-tabs::-webkit-scrollbar {
-      display: none;
-    }
-
-    .filter-tab {
-      flex: 0 0 auto;
-      min-height: 34px;
-      padding: 8px 12px;
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 999px;
-      color: rgba(255,255,255,0.74);
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      background: rgba(255,255,255,0.055);
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    .filter-tab.active {
-      color: #03140f;
-      background: linear-gradient(135deg, var(--secondary), var(--success));
-      border-color: rgba(32, 227, 162, 0.42);
-      box-shadow: 0 8px 20px rgba(24, 226, 210, 0.13);
-    }
-
-    @media (max-width: 900px) {
-      .stats-container {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-        gap: 6px !important;
-      }
-
-      .stat-box {
-        padding: 9px 5px !important;
-        border-radius: 15px !important;
-      }
-
-      .stat-num {
-        font-size: clamp(1.05rem, 5vw, 1.35rem) !important;
-      }
-
-      .stat-label {
-        font-size: 0.52rem !important;
-        letter-spacing: 0.035em !important;
-      }
-
-      .filter-tabs {
-        margin-bottom: 11px;
-        touch-action: pan-x pan-y;
-      }
-
-      .filter-tab {
-        min-height: 33px;
-        padding: 8px 11px;
-      }
-    }
-
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -1693,7 +1607,6 @@
 
       <div class="date-mobile" id="dateMobile">
         <span><i class="fas fa-calendar"></i> <span id="currentDateMobile">-</span></span>
-        <span><i class="fas fa-rotate"></i> <span id="lastUpdate">Update -</span></span>
       </div>
 
       <!-- Stats (sudah diperkecil untuk mobile via CSS) -->
@@ -1709,10 +1622,6 @@
         <div class="stat-box belum">
           <div class="stat-num" id="absentCount">0</div>
           <div class="stat-label">Belum</div>
-        </div>
-        <div class="stat-box terlambat">
-          <div class="stat-num" id="lateCount">0</div>
-          <div class="stat-label">Terlambat</div>
         </div>
       </div>
 
@@ -1747,13 +1656,6 @@
             <input type="text" id="staffSearch" placeholder="Cari..." oninput="filterTable()">
           </div>
         </div>
-        <div class="filter-tabs" id="filterTabs">
-          <button type="button" class="filter-tab active" onclick="setStatusFilter('all', this)">Semua</button>
-          <button type="button" class="filter-tab" onclick="setStatusFilter('belum', this)">Belum</button>
-          <button type="button" class="filter-tab" onclick="setStatusFilter('sudah', this)">Sudah</button>
-          <button type="button" class="filter-tab" onclick="setStatusFilter('terlambat', this)">Terlambat</button>
-          <button type="button" class="filter-tab" onclick="setStatusFilter('off', this)">OFF/CUTI</button>
-        </div>
         <div class="staff-list" id="attendanceBody"></div>
       </div>
 
@@ -1778,7 +1680,6 @@
     let lastClockMinute = '';
     let tableRenderFrame = null;
     let searchDebounceTimer = null;
-    let activeStatusFilter = 'all';
     const DEBUG_LOG = false;
 
     // Elemen DOM
@@ -1798,8 +1699,6 @@
       totalStaff: document.getElementById('totalStaff'),
       presentCount: document.getElementById('presentCount'),
       absentCount: document.getElementById('absentCount'),
-      lateCount: document.getElementById('lateCount'),
-      lastUpdate: document.getElementById('lastUpdate'),
       toast: document.getElementById('toast'),
       liveDotMob: document.getElementById('liveDotMob'),
       liveTextMob: document.getElementById('liveTextMob'),
@@ -1897,7 +1796,6 @@
       // Ini menjaga status BISA ABSEN / TERLAMBAT tetap akurat tanpa render ulang berat tiap detik.
       if (minuteKey !== lastClockMinute) {
         lastClockMinute = minuteKey;
-        updateStats();
         scheduleTableRender(false);
       }
     }
@@ -2094,7 +1992,6 @@
             updateUserInfo();
           }
           setLiveStatus('connected');
-          updateLastUpdate();
         } else {
           throw new Error(result.message);
         }
@@ -2122,12 +2019,9 @@
       const activeStaff = staffData.filter(s => !s.cuti);
       const total = activeStaff.length;
       const present = activeStaff.filter(s => s.status === 'Sudah Absen').length;
-      const nowSec = timeToSeconds(currentTimeStr);
-      const late = activeStaff.filter(s => s.status !== 'Sudah Absen' && timeToSeconds(s.jam_kerja) && nowSec >= timeToSeconds(s.jam_kerja)).length;
       elements.totalStaff.innerText = total;
       elements.presentCount.innerText = present;
       elements.absentCount.innerText = total - present;
-      if (elements.lateCount) elements.lateCount.innerText = late;
     }
 
     function updateUserInfo() {
@@ -2180,54 +2074,10 @@
       return diff + ' menit';
     }
 
-    function updateLastUpdate() {
-      if (elements.lastUpdate) elements.lastUpdate.innerText = 'Update ' + currentTimeStr;
-    }
-
-    function getStaffState(staff) {
-      const isHadir = staff.status === 'Sudah Absen';
-      const isOff = staff.cuti === true;
-      const nowSec = timeToSeconds(currentTimeStr);
-      const jamKerjaSec = timeToSeconds(staff.jam_kerja);
-      const batasAwalSec = jamKerjaSec - 15 * 60;
-
-      if (isOff) return 'off';
-      if (isHadir) return 'sudah';
-      if (jamKerjaSec && nowSec >= jamKerjaSec) return 'terlambat';
-      if (jamKerjaSec && nowSec >= batasAwalSec && nowSec < jamKerjaSec) return 'bisa';
-      return 'belum';
-    }
-
-    function getStaffPriority(staff) {
-      const state = getStaffState(staff);
-      if (state === 'bisa') return 0;
-      if (state === 'terlambat') return 1;
-      if (state === 'belum') return 2;
-      if (state === 'sudah') return 3;
-      return 4;
-    }
-
-    function matchesStatusFilter(staff) {
-      const state = getStaffState(staff);
-      if (activeStatusFilter === 'all') return true;
-      if (activeStatusFilter === 'belum') return state === 'belum' || state === 'bisa';
-      if (activeStatusFilter === 'sudah') return state === 'sudah';
-      if (activeStatusFilter === 'terlambat') return state === 'terlambat';
-      if (activeStatusFilter === 'off') return state === 'off';
-      return true;
-    }
-
-    function setStatusFilter(filterName, button) {
-      activeStatusFilter = filterName || 'all';
-      document.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active'));
-      if (button) button.classList.add('active');
-      scheduleTableRender(true);
-    }
-
     function renderTable(filter = "", forceRender = false) {
       const tbody = elements.attendanceBody;
       const minuteBucket = currentTimeStr.slice(0, 5);
-      const renderKey = `${filter}__${activeStatusFilter}__${minuteBucket}__${lastDataSignature}`;
+      const renderKey = `${filter}__${minuteBucket}__${lastDataSignature}`;
       if (!forceRender && renderKey === lastRenderKey) return;
       lastRenderKey = renderKey;
 
@@ -2236,8 +2086,6 @@
       if (filter) {
         data = data.filter(s => String(s.nama || '').toLowerCase().includes(filter.toLowerCase()));
       }
-
-      data = data.filter(matchesStatusFilter);
 
       if (data.length === 0) {
         tbody.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);opacity:0.5">Tidak ada data</div>';
@@ -2263,15 +2111,11 @@
         else past.push(staff);
       });
 
+      upcoming.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
+      past.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
       offList.sort((a, b) => String(a.kategori || a.status || '').localeCompare(String(b.kategori || b.status || '')) || String(a.nama).localeCompare(String(b.nama)));
 
-      const activeList = upcoming.concat(past).sort((a, b) => {
-        const p = getStaffPriority(a) - getStaffPriority(b);
-        if (p !== 0) return p;
-        const t = timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja);
-        if (t !== 0) return t;
-        return String(a.nama || '').localeCompare(String(b.nama || ''));
-      });
+      const activeList = upcoming.concat(past);
 
       const renderStaffRow = (staff) => {
         const isHadir = staff.status === 'Sudah Absen';
@@ -2400,7 +2244,6 @@
             staffData[index].waktu = result.waktu;
           }
           lastDataSignature = makeDataSignature(staffData);
-          updateLastUpdate();
           updateUI(true);
         } else {
           showToast(result.message || 'Gagal', 'error');
