@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ABSENSI LINE TOGEL</title>
+  <title>ABSENSI LINETOGEL</title>
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%92%3C/text%3E%3C/svg%3E">
@@ -921,6 +921,91 @@
       border-color: rgba(255, 209, 102, 0.20);
     }
 
+
+
+    /* Batas visual antar shift — hanya tampilan, tidak mengubah fungsi absensi */
+    .shift-divider {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 2px 4px;
+      color: rgba(255,255,255,0.88);
+      font-size: 0.66rem;
+      font-weight: 900;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+    }
+
+    .shift-divider::before,
+    .shift-divider::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18));
+    }
+
+    .shift-divider::after {
+      background: linear-gradient(90deg, rgba(255,255,255,0.18), transparent);
+    }
+
+    .shift-divider-label,
+    .shift-divider-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .shift-divider-label {
+      gap: 7px;
+      min-height: 28px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.11);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .shift-divider-count {
+      min-width: 24px;
+      height: 24px;
+      padding: 0 7px;
+      border-radius: 999px;
+      font-size: 0.60rem;
+      letter-spacing: 0;
+      color: rgba(255,255,255,0.78);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .shift-divider.shift-pagi .shift-divider-label {
+      color: #ffe29a;
+      background: linear-gradient(135deg, rgba(255,209,102,0.18), rgba(255,183,3,0.07));
+      border-color: rgba(255,209,102,0.28);
+    }
+
+    .shift-divider.shift-pagi i {
+      color: var(--warning);
+      text-shadow: 0 0 14px rgba(255,209,102,0.36);
+    }
+
+    .shift-divider.shift-malam .shift-divider-label {
+      color: #dcd6ff;
+      background: linear-gradient(135deg, rgba(124,92,255,0.20), rgba(93,75,230,0.07));
+      border-color: rgba(124,92,255,0.30);
+    }
+
+    .shift-divider.shift-malam i {
+      color: #a895ff;
+      text-shadow: 0 0 14px rgba(124,92,255,0.42);
+    }
+
+    .shift-divider.shift-lain .shift-divider-label {
+      color: rgba(255,255,255,0.82);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.12);
+    }
+
     .kategori-chip {
       display: inline-flex;
       align-items: center;
@@ -1548,7 +1633,7 @@
       <div class="login-logo">
         <i class="fas fa-fingerprint"></i>
       </div>
-      <div class="login-title">LINE TOGEL</div>
+      <div class="login-title">LINETOGEL</div>
       <div class="login-sub">Absensi Harian</div>
 
       <div class="input-group">
@@ -1581,7 +1666,7 @@
         <div style="width:60px;height:60px;background:linear-gradient(135deg, var(--primary), var(--secondary));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:26px;box-shadow: 0 10px 20px var(--primary-glow);">
           <i class="fas fa-fingerprint"></i>
         </div>
-        <h1 style="font-size:1.2rem;font-weight:800;">LINE TOGEL</h1>
+        <h1 style="font-size:1.2rem;font-weight:800;">LINETOGEL</h1>
         <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:5px;">Absensi Harian</p>
         
         <div class="live-badge-m" style="justify-content:center; margin-top:10px; margin-bottom:20px;">
@@ -1595,7 +1680,7 @@
         <div style="display:flex; align-items:center; gap:10px;">
           <div class="m-logo"><i class="fas fa-fingerprint"></i></div>
           <div class="m-title">
-            <h1>LINE TOGEL</h1>
+            <h1>LINETOGEL</h1>
             <p id="currentTimeMobile">--:--:--</p>
           </div>
         </div>
@@ -2095,8 +2180,14 @@
       const nowSec = timeToSeconds(currentTimeStr);
       const TOLERANSI = 15 * 60;
 
+      // URUTAN FUNGSI ASLI DIPERTAHANKAN DAN DIPERTEGAS:
+      // 1. Jadwal yang belum lewat tetap di atas.
+      // 2. Jadwal yang waktunya sudah lewat dipindahkan ke bawah.
+      // 3. Staff yang sudah absen ditempatkan paling bawah dari jadwal aktif.
+      // 4. OFFDAY / CUTI tetap pada bagian tersendiri.
       const upcoming = [];
       const past = [];
+      const attended = [];
       const offList = [];
 
       data.forEach(staff => {
@@ -2105,17 +2196,29 @@
           return;
         }
 
+        if (staff.status === 'Sudah Absen') {
+          attended.push(staff);
+          return;
+        }
+
         const staffJamSec = timeToSeconds(staff.jam_kerja);
-        // Yang sudah lewat jam kerja langsung dipindah ke bawah.
         if (staffJamSec > nowSec) upcoming.push(staff);
         else past.push(staff);
       });
 
-      upcoming.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      past.sort((a, b) => timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja));
-      offList.sort((a, b) => String(a.kategori || a.status || '').localeCompare(String(b.kategori || b.status || '')) || String(a.nama).localeCompare(String(b.nama)));
+      const sortBySchedule = (a, b) =>
+        timeToSeconds(a.jam_kerja) - timeToSeconds(b.jam_kerja) ||
+        String(a.nama || '').localeCompare(String(b.nama || ''));
 
-      const activeList = upcoming.concat(past);
+      upcoming.sort(sortBySchedule);
+      past.sort(sortBySchedule);
+      attended.sort(sortBySchedule);
+      offList.sort((a, b) =>
+        String(a.kategori || a.status || '').localeCompare(String(b.kategori || b.status || '')) ||
+        String(a.nama || '').localeCompare(String(b.nama || ''))
+      );
+
+      const activeList = upcoming.concat(past, attended);
 
       const renderStaffRow = (staff) => {
         const isHadir = staff.status === 'Sudah Absen';
@@ -2194,9 +2297,53 @@
         `;
       };
 
+      // Pembatas shift hanya disisipkan pada urutan akhir.
+      // Tidak ada pengelompokan ulang berdasarkan shift, sehingga fungsi urutan di atas tidak tertimpa.
+      const getShiftDisplayGroup = (staff) => {
+        const shiftText = String(staff.shift || '').toUpperCase();
+        const jamKerjaText = String(staff.jam_kerja || '');
+        if (shiftText.includes('MALAM') || jamKerjaText.startsWith('19:')) return 'malam';
+        if (shiftText.includes('PAGI') || jamKerjaText.startsWith('07:')) return 'pagi';
+        return 'lain';
+      };
+
+      const shiftDisplayMeta = {
+        pagi: { label: 'Shift Pagi', icon: 'fa-sun' },
+        malam: { label: 'Shift Malam', icon: 'fa-moon' },
+        lain: { label: 'Jadwal Lain', icon: 'fa-clock' }
+      };
+
+      const renderShiftDivider = (group, count) => {
+        const meta = shiftDisplayMeta[group] || shiftDisplayMeta.lain;
+        return `
+          <div class="shift-divider shift-${group}">
+            <span class="shift-divider-label"><i class="fas ${meta.icon}"></i> ${meta.label}</span>
+            <span class="shift-divider-count">${count}</span>
+          </div>
+        `;
+      };
+
       let html = '';
       html += `<div class="section-divider"><span><i class="fas fa-user-check"></i> Jadwal Aktif</span><span>${activeList.length} Staff</span></div>`;
-      html += activeList.length ? activeList.map(renderStaffRow).join('') : '<div style="text-align:center;padding:20px;color:var(--text-muted);opacity:0.5">Tidak ada jadwal aktif</div>';
+
+      if (activeList.length) {
+        let index = 0;
+        while (index < activeList.length) {
+          const currentGroup = getShiftDisplayGroup(activeList[index]);
+          let endIndex = index + 1;
+
+          while (endIndex < activeList.length && getShiftDisplayGroup(activeList[endIndex]) === currentGroup) {
+            endIndex++;
+          }
+
+          const shiftBlock = activeList.slice(index, endIndex);
+          html += renderShiftDivider(currentGroup, shiftBlock.length);
+          html += shiftBlock.map(renderStaffRow).join('');
+          index = endIndex;
+        }
+      } else {
+        html += '<div style="text-align:center;padding:20px;color:var(--text-muted);opacity:0.5">Tidak ada jadwal aktif</div>';
+      }
 
       html += `<div class="section-divider off-section"><span><i class="fas fa-calendar-xmark"></i> OFFDAY / CUTI</span><span>${offList.length} Staff</span></div>`;
       html += offList.length ? offList.map(renderStaffRow).join('') : '<div style="text-align:center;padding:16px;color:var(--text-muted);opacity:0.45">Tidak ada OFFDAY / CUTI</div>';
