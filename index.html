@@ -1711,18 +1711,67 @@
       staffSearch: document.getElementById('staffSearch')
     };
 
+    // Simpan login selama 30 hari, termasuk setelah tab/browser ditutup.
+    const LOGIN_SESSION_KEY = 'linetogel_absensi_session';
+    const LOGIN_SESSION_DURATION = 30 * 24 * 60 * 60 * 1000;
+
+    function saveLoginSession(user) {
+      const session = JSON.stringify({
+        user,
+        expiresAt: Date.now() + LOGIN_SESSION_DURATION
+      });
+      try {
+        localStorage.setItem(LOGIN_SESSION_KEY, session);
+        sessionStorage.removeItem('currentUser');
+        sessionStorage.removeItem(LOGIN_SESSION_KEY);
+      } catch (e) {
+        // Jika penyimpanan permanen dibatasi browser, pertahankan sesi tab.
+        sessionStorage.setItem(LOGIN_SESSION_KEY, session);
+        sessionStorage.removeItem('currentUser');
+      }
+    }
+
+    function clearLoginSession() {
+      try { localStorage.removeItem(LOGIN_SESSION_KEY); } catch (e) {}
+      sessionStorage.removeItem(LOGIN_SESSION_KEY);
+      sessionStorage.removeItem('currentUser');
+    }
+
+    function readLoginSession() {
+      let saved = sessionStorage.getItem(LOGIN_SESSION_KEY);
+      if (!saved) {
+        try { saved = localStorage.getItem(LOGIN_SESSION_KEY); } catch (e) {}
+      }
+      if (saved) {
+        const session = JSON.parse(saved);
+        if (session && session.user && Number.isFinite(session.expiresAt) &&
+            Date.now() < session.expiresAt) {
+          return session.user;
+        }
+        clearLoginSession();
+        return null;
+      }
+      // Pindahkan sesi lama yang masih aktif ke penyimpanan 30 hari.
+      const legacy = sessionStorage.getItem('currentUser');
+      if (legacy) {
+        const user = JSON.parse(legacy);
+        if (user) saveLoginSession(user);
+        return user;
+      }
+      return null;
+    }
+
     // ========== INISIALISASI ==========
     (function init() {
-      const savedUser = sessionStorage.getItem('currentUser');
-      if (savedUser) {
-        try {
-          currentUser = JSON.parse(savedUser);
+      try {
+        currentUser = readLoginSession();
+        if (currentUser) {
           showMainApp();
-        } catch (e) {
-          sessionStorage.removeItem('currentUser');
+        } else {
           showLogin();
         }
-      } else {
+      } catch (e) {
+        clearLoginSession();
         showLogin();
       }
 
@@ -1880,7 +1929,7 @@
         if (DEBUG_LOG) console.log('Hasil login:', result);
         if (result.success) {
           currentUser = result.user;
-          sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+          saveLoginSession(currentUser);
           showMainApp();
         } else {
           elements.loginError.innerText = result.message || 'Login gagal';
@@ -1895,7 +1944,7 @@
 
     // ========== LOGOUT ==========
     function handleLogout() {
-      sessionStorage.removeItem('currentUser');
+      clearLoginSession();
       currentUser = null;
       currentStaff = null;
       staffData = [];
